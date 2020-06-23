@@ -160,14 +160,17 @@ Pre: el hash fue creado, _pos_ es una posición valida de la tabla de _hash_.
 Post: se actualizó el estado. 
 */
 void resolver_colision(const hash_t *hash, const char *clave, size_t *pos, estados_t *estado) {
-    while (hash->tabla[*pos].estado == OCUPADO && strcmp(hash->tabla[*pos].clave, clave) != 0) {
+    //printf("pos antes del while: %ld\n", *pos);
+    while (hash->tabla[*pos].estado != VACIO && strcmp(hash->tabla[*pos].clave, clave) != 0) {
         if (*pos == hash->cantidad - 1) *pos = (size_t)-1;
         *pos = *pos + 1;
-    }
+        //printf("pos en el while: %ld\n", *pos);
+    }        
 
-    if (hash->tabla[*pos].estado == BORRADO) *estado = BORRADO;
-    else if (hash->tabla[*pos].estado == OCUPADO) *estado = OCUPADO;
-    else *estado = VACIO;
+    //printf("pos fuera del while: %ld\n", *pos);
+    if (hash->tabla[*pos].estado == VACIO) *estado = VACIO;
+    else if (hash->tabla[*pos].estado == BORRADO) *estado = BORRADO;
+    else *estado = OCUPADO;
 }
 
 /*
@@ -186,6 +189,8 @@ void modif_celda(hash_t *hash, char *clave, void *dato, size_t pos, estados_t es
         if (clave) hash->tabla[pos].clave = clave;
         hash->tabla[pos].valor = dato;
         hash->cantidad++;
+        printf("Cantidad es: %ld\n", hash->cantidad);
+        printf("Borrados es: %ld\n", hash->borrados);
     }
     
     hash->tabla[pos].estado = estado;
@@ -201,10 +206,11 @@ se devolvió NULL.
 */
 void *buscar_clave(const hash_t *hash, const char *clave, size_t *pos) {
     estados_t estado = hash->tabla[*pos].estado;
-    while (estado != VACIO) {
+    if (estado != VACIO) {
         resolver_colision(hash, clave, pos, &estado);
         if (estado == OCUPADO) return hash->tabla[*pos].valor;
     }
+    
     return NULL;
 }
 
@@ -240,7 +246,7 @@ bool hash_guardar(hash_t *hash, const char *clave, void *dato) {
     if (!clave_copia) return false;
     
     size_t pos = obtener_posicion(hash, clave);
-    estados_t estado;
+    estados_t estado = hash->tabla[pos].estado;
     
     if (estado == OCUPADO) resolver_colision(hash, clave_copia, &pos, &estado);
     
@@ -258,7 +264,7 @@ void *hash_borrar(hash_t *hash, const char *clave) {
     void *dato = buscar_clave(hash, clave, &pos);
     if (!dato) return NULL;
     
-    modif_celda(hash, NULL, NULL, pos, BORRADO);
+    modif_celda(hash, NULL, dato, pos, BORRADO);
     return dato;
 }
 
@@ -269,7 +275,7 @@ void *hash_obtener(const hash_t *hash, const char *clave) {
 
 bool hash_pertenece(const hash_t *hash, const char *clave) {
     size_t pos = obtener_posicion(hash, clave);
-    return !buscar_clave(hash, clave, &pos) ? false : true;
+    return !buscar_clave(hash, clave, &pos) && hash->tabla[pos].estado == VACIO ? false : true;
 }
 
 size_t hash_cantidad(const hash_t *hash) {
