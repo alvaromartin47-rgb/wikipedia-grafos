@@ -212,7 +212,6 @@ static void prueba_hash_valor_null()
 static void prueba_hash_volumen(size_t largo, bool debug)
 {
     hash_t* hash = hash_crear(NULL);
-    printf("hola\n");
 
     const size_t largo_clave = 10;
     char (*claves)[largo_clave] = malloc(largo * largo_clave);
