@@ -7,7 +7,8 @@
 #include <stdlib.h>
 
 #define CAPACIDAD_MINIMA 97
-#define FACTOR_CARGA 0.7
+#define FACTOR_CARGA_MAX 0.7
+#define FACTOR_CARGA_MIN 0.7 * 0.10
 typedef enum{VACIO, OCUPADO, BORRADO} estado_t;
 
 typedef struct celda{
@@ -143,7 +144,7 @@ bool hash_guardar(hash_t *hash, const char *clave, void *dato){
         return false;
     }
 
-    if((double)hash->cantidad / (double)hash->cantidad >= FACTOR_CARGA){
+    if((double)hash->cantidad / (double)hash->cantidad >= FACTOR_CARGA_MAX){
         if(!hash_redimensionar(hash, hash->capacidad * 2)){
             return false;
         }
@@ -168,6 +169,11 @@ bool hash_guardar(hash_t *hash, const char *clave, void *dato){
 }
 
 void *hash_borrar(hash_t *hash, const char *clave){
+    if((double)hash->cantidad / (double)hash->capacidad <= FACTOR_CARGA_MIN){
+        if(!hash_redimensionar(hash, hash->capacidad / 2)){
+            return false;
+        }
+    }
     size_t pos = obtener_posicion(hash, clave);
     if(hash->tabla[pos].estado == VACIO){
         return NULL;
@@ -175,7 +181,7 @@ void *hash_borrar(hash_t *hash, const char *clave){
 
     hash->tabla[pos].estado = BORRADO;
     hash->borrados++;
-    hash->canitdad--;
+    hash->cantidad--;
     free(hash->tabla[pos].clave);
     return hash->tabla[pos].valor;
 }
