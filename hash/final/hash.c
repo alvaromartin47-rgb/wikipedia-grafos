@@ -109,13 +109,8 @@ Post: en el hash no se guardaron claves repetidas.
 bool reasignar_pos(hash_t *hash, celda_t *tabla_ant, size_t capacidad_ant){
     for (size_t i = 0; i < capacidad_ant; i++){
         if (tabla_ant[i].estado == OCUPADO) {
-            printf("Clave: %s\n", hash->tabla[i].clave);
-            printf("Capacidad: %ld\n", hash->capacidad);
-
-            if (!hash_guardar(hash, tabla_ant[i].clave, tabla_ant[i].valor)) {
-                printf("Error al guardar.\n");
-                return false;
-            }
+            if (!hash_guardar(hash, tabla_ant[i].clave, tabla_ant[i].valor)) return false;
+            free(tabla_ant[i].clave);
         }
     }
     return true;
@@ -296,6 +291,11 @@ void *hash_borrar(hash_t *hash, const char *clave) {
     if (hash->tabla[pos].estado == VACIO) return NULL;
 
     modif_celda(hash, NULL, dato, pos, BORRADO);
+
+    if ((double)(hash->cantidad + hash->borrados) / (double)hash->capacidad <= (FACTOR_CARGA * 0.10)) {
+        if (!hash_redimensionar(hash, hash->capacidad / 2)) return false;
+    }
+
     return dato;
 }
 
