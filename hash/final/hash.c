@@ -112,7 +112,7 @@ bool reasignar_pos(hash_t *hash, celda_t *tabla_ant, size_t capacidad_ant){
             printf("Clave: %s\n", hash->tabla[i].clave);
             printf("Capacidad: %ld\n", hash->capacidad);
 
-            if (!hash_guardar(hash, hash->tabla[i].clave, hash->tabla[i].valor)) {
+            if (!hash_guardar(hash, tabla_ant[i].clave, tabla_ant[i].valor)) {
                 printf("Error al guardar.\n");
                 return false;
             }
