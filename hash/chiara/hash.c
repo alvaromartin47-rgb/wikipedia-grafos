@@ -111,6 +111,7 @@ bool reasignar_pos(hash_t *hash, celda_t *tabla_ant, size_t capacidad_ant){
         if (tabla_ant[i].estado == OCUPADO) {
 
             if (!hash_guardar(hash, tabla_ant[i].clave, tabla_ant[i].valor)) return false;
+            free(tabla_ant[i].clave);
         }
     }
     return true;
