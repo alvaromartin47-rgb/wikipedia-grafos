@@ -77,12 +77,14 @@ Inicializa una tabla de hash, un conjunto de structs que tendran tres miembros.
 Se inician _capacidad_ de structs, todos en estado VACIO y su clave y valor apuntando
 a NULL.
 */
-void iniciar_tabla(celda_t *tabla, size_t capacidad){
-    for(size_t i = 0; i < capacidad; i++){
-        tabla[i].clave = NULL;
-        tabla[i].valor = NULL;
-        tabla[i].estado = VACIO;
+void iniciar_tabla(hash_t *hash){
+    for(size_t i = 0; i < hash->capacidad; i++){
+        hash->tabla[i].clave = NULL;
+        hash->tabla[i].valor = NULL;
+        hash->tabla[i].estado = VACIO;
     }
+    hash->cantidad = 0;
+    hash->borrados = 0;
 }
 
 /*
@@ -107,7 +109,13 @@ Post: en el hash no se guardaron claves repetidas.
 bool reasignar_pos(hash_t *hash, celda_t *tabla_ant, size_t capacidad_ant){
     for (size_t i = 0; i < capacidad_ant; i++){
         if (tabla_ant[i].estado == OCUPADO) {
-            if (!hash_guardar(hash, hash->tabla[i].clave, hash->tabla[i].valor)) return false;
+            printf("Clave: %s\n", hash->tabla[i].clave);
+            printf("Capacidad: %ld\n", hash->capacidad);
+
+            if (!hash_guardar(hash, hash->tabla[i].clave, hash->tabla[i].valor)) {
+                printf("Error al guardar.\n");
+                return false;
+            }
         }
     }
     return true;
@@ -136,7 +144,7 @@ bool hash_redimensionar(hash_t *hash, size_t nueva_capacidad){
 
     size_t capacidad_ant = hash->capacidad;
     hash->capacidad = nueva_capacidad;
-    iniciar_tabla(hash->tabla, hash->cantidad);
+    iniciar_tabla(hash);
     
     if (!reasignar_pos(hash, tabla_ant, capacidad_ant)) {
         free(hash->tabla);
@@ -246,11 +254,8 @@ hash_t *hash_crear(hash_destruir_dato_t destruir_dato) {
     hash->tabla = malloc(sizeof(celda_t) * CAPACIDAD_MINIMA);
     if(!hash->tabla) return NULL;
 
-    iniciar_tabla(hash->tabla, CAPACIDAD_MINIMA);
-
-    hash->cantidad = 0;
-    hash->borrados = 0;
     hash->capacidad = CAPACIDAD_MINIMA;
+    iniciar_tabla(hash);
     hash->destructor_dato = destruir_dato;
     
     return hash;
