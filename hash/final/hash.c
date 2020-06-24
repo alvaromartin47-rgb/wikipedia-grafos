@@ -153,8 +153,8 @@ bool hash_redimensionar(hash_t *hash, size_t nueva_capacidad){
 /*
 Recibe un hash una clave (string) un puntero a una posicion perteneciente a la tabla
 de _hash_ y uno a un estado. 
-Avanza la posición hasta que encuentre una celda borrada, vacia o bien se encuentre
-ocupada pero su clave sea igual a _clave_, en el hash. Actualiza el estado correspondiente
+Avanza la posición mientras que haya celdas vacias o bien se encuentre
+vacia pero su clave sea igual a _clave_, en el hash. Actualiza el estado correspondiente
 segun las situaciones mencionadas anteriormente.
 Pre: el hash fue creado, _pos_ es una posición valida de la tabla de _hash_.
 Post: se actualizó el estado. 
@@ -186,9 +186,11 @@ void modif_celda(hash_t *hash, char *clave, void *dato, size_t pos, estados_t es
         hash->cantidad--;
         hash->borrados++;
     } else {
-        if (clave) hash->tabla[pos].clave = clave;
+        if (clave) {
+            hash->tabla[pos].clave = clave;
+            hash->cantidad++;
+        }
         hash->tabla[pos].valor = dato;
-        hash->cantidad++;
         printf("Cantidad es: %ld\n", hash->cantidad);
         printf("Borrados es: %ld\n", hash->borrados);
     }
@@ -253,6 +255,7 @@ bool hash_guardar(hash_t *hash, const char *clave, void *dato) {
     if (estado == OCUPADO) {
         if (hash->destructor_dato) hash->destructor_dato(hash->tabla[pos].valor);
         modif_celda(hash, NULL, dato, pos, OCUPADO);
+    
     } else modif_celda(hash, clave_copia, dato, pos, OCUPADO);
 
     return true;
@@ -262,7 +265,7 @@ void *hash_borrar(hash_t *hash, const char *clave) {
     size_t pos = obtener_posicion(hash, clave);
 
     void *dato = buscar_clave(hash, clave, &pos);
-    if (!dato) return NULL;
+    if (!dato && hash->tabla[pos].estado == VACIO) return NULL;
     
     modif_celda(hash, NULL, dato, pos, BORRADO);
     return dato;
