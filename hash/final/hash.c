@@ -337,7 +337,6 @@ bool hash_iter_avanzar(hash_iter_t *iter) {
     
     if (ok) {
         if (iter->pos_alan > 0) iter->pos_alan++;
-        if (iter->pos_alan == 0 && iter->hash->tabla[0].estado == OCUPADO) iter->pos_alan++;
         while (ok && iter->hash->tabla[iter->pos_alan].estado != OCUPADO) {
             iter->pos_alan++;
             if (iter->pos_alan == iter->hash->capacidad) ok = false;
