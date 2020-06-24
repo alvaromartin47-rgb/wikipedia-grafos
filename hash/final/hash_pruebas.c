@@ -317,7 +317,7 @@ static void prueba_hash_iterar()
     indice = buscar(clave, claves, sizeof(claves) / sizeof(char *));
     print_test("Prueba hash iterador ver actual, es una clave valida", indice != -1);
     print_test("Prueba hash iterador ver actual, no es el mismo puntero", clave != claves[indice]);
-    hash_iter_avanzar(iter);
+    print_test("Prueba hash iterador avanzar es false", !hash_iter_avanzar(iter)); // Mi prueba
     print_test("Prueba hash iterador esta al final, es true", hash_iter_al_final(iter));
 
     /* Vuelve a tratar de avanzar, por las dudas */

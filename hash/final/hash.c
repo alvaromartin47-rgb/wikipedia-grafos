@@ -8,7 +8,7 @@
 
 /*********************CONSTANTES Y DEFINICIONES*********************/
 
-#define CAPACIDAD_MINIMA 97
+#define CAPACIDAD_MINIMA 10000
 #define FACTOR_CARGA 0.7
 typedef enum estados {VACIO, OCUPADO, BORRADO} estados_t;
 
@@ -50,7 +50,6 @@ struct hash {
 struct hash_iter {
     const struct hash *hash;
     size_t pos_alan;
-    size_t pos_barbara;
 };
 
 /*******************************************************************/
@@ -159,18 +158,28 @@ segun las situaciones mencionadas anteriormente.
 Pre: el hash fue creado, _pos_ es una posición valida de la tabla de _hash_.
 Post: se actualizó el estado. 
 */
-void resolver_colision(const hash_t *hash, const char *clave, size_t *pos, estados_t *estado) {
-    //printf("pos antes del while: %ld\n", *pos);
-    while (hash->tabla[*pos].estado != VACIO && strcmp(hash->tabla[*pos].clave, clave) != 0) {
-        if (*pos == hash->cantidad - 1) *pos = (size_t)-1;
+estados_t resolver_colision(const hash_t *hash, const char *clave, size_t *pos, size_t tipo) {
+    estados_t estado = hash->tabla[*pos].estado;
+    
+    while (estado != VACIO) {
+        // Si me llamó guardar y el estado actual es borrado devuelvo borrado para insertar alli.
+        if (tipo == 1 && estado == BORRADO) return BORRADO;
+        
+        // De lo contrario sin importar cual llamó si la clave actual es igual a la clave inicial
+        // devuelvo un ocupado, si llamo guardar debo reemplazar el valor en esa celda y mantener
+        // la clave, si me llamo buscar quiere decir que la clave fué hallada y debo devolver su valor.
+        if (hash->tabla[*pos].clave && strcmp(hash->tabla[*pos].clave, clave) == 0) return OCUPADO;
+        
+        // Actualizo la posición, verifico si es igual a la capacidad para comenzar a iterar desde
+        // el principio del arreglo, y actualizo el estado.
         *pos = *pos + 1;
-        //printf("pos en el while: %ld\n", *pos);
-    }        
-
-    //printf("pos fuera del while: %ld\n", *pos);
-    if (hash->tabla[*pos].estado == VACIO) *estado = VACIO;
-    else if (hash->tabla[*pos].estado == BORRADO) *estado = BORRADO;
-    else *estado = OCUPADO;
+        if (*pos == hash->capacidad) *pos = 0;
+        estado = hash->tabla[*pos].estado;
+    }
+    // Si llega acá, quiere decir que el estado actual es vacio, por lo tanto lo devuelvo y, si me
+    // llamó guardar significa que debo guardar en esta posición y si me llamó buscar quiere decir que
+    // no se encontro la clave y debo devolver NULL.
+    return VACIO;
 }
 
 /*
@@ -183,6 +192,8 @@ Post: se moficó una celda y su estado cambió  a _estado_.
 void modif_celda(hash_t *hash, char *clave, void *dato, size_t pos, estados_t estado) {
     if (estado == BORRADO) {
         free(hash->tabla[pos].clave);
+        hash->tabla[pos].clave = NULL;
+        hash->tabla[pos].valor = NULL;
         hash->cantidad--;
         hash->borrados++;
     } else {
@@ -191,8 +202,6 @@ void modif_celda(hash_t *hash, char *clave, void *dato, size_t pos, estados_t es
             hash->cantidad++;
         }
         hash->tabla[pos].valor = dato;
-        printf("Cantidad es: %ld\n", hash->cantidad);
-        printf("Borrados es: %ld\n", hash->borrados);
     }
     
     hash->tabla[pos].estado = estado;
@@ -209,10 +218,9 @@ se devolvió NULL.
 void *buscar_clave(const hash_t *hash, const char *clave, size_t *pos) {
     estados_t estado = hash->tabla[*pos].estado;
     if (estado != VACIO) {
-        resolver_colision(hash, clave, pos, &estado);
+        estado = resolver_colision(hash, clave, pos, 2);
         if (estado == OCUPADO) return hash->tabla[*pos].valor;
     }
-    
     return NULL;
 }
 
@@ -240,8 +248,13 @@ hash_t *hash_crear(hash_destruir_dato_t destruir_dato) {
 }
 
 bool hash_guardar(hash_t *hash, const char *clave, void *dato) {
+    if (!clave) return NULL;
+    
     if ((double)(hash->cantidad + hash->borrados) / (double)hash->capacidad >= FACTOR_CARGA) {
-        if (!hash_redimensionar(hash, hash->capacidad * 2)) return false;
+        if (!hash_redimensionar(hash, hash->capacidad * 2)) {
+            printf("No se pudo redimensionar.\n");
+            return false;
+        }
     }
 
     char *clave_copia = strdup(clave);
@@ -250,7 +263,7 @@ bool hash_guardar(hash_t *hash, const char *clave, void *dato) {
     size_t pos = obtener_posicion(hash, clave);
     estados_t estado = hash->tabla[pos].estado;
     
-    if (estado == OCUPADO) resolver_colision(hash, clave_copia, &pos, &estado);
+    if (estado == OCUPADO) estado = resolver_colision(hash, clave_copia, &pos, 1);
     
     if (estado == OCUPADO) {
         if (hash->destructor_dato) hash->destructor_dato(hash->tabla[pos].valor);
@@ -265,8 +278,9 @@ void *hash_borrar(hash_t *hash, const char *clave) {
     size_t pos = obtener_posicion(hash, clave);
 
     void *dato = buscar_clave(hash, clave, &pos);
-    if (!dato && hash->tabla[pos].estado == VACIO) return NULL;
-    
+
+    if (hash->tabla[pos].estado == VACIO) return NULL;
+
     modif_celda(hash, NULL, dato, pos, BORRADO);
     return dato;
 }
@@ -308,27 +322,30 @@ hash_iter_t *hash_iter_crear(const hash_t *hash) {
 
     iter->hash = hash;
     iter->pos_alan = 0;
-    iter->pos_barbara = 0;
+    hash_iter_avanzar(iter);
     return iter;
 }
 
 bool hash_iter_al_final(const hash_iter_t *iter) {
-    return (iter->pos_barbara == iter->hash->cantidad) ? true : false;
+    return iter->pos_alan == iter->hash->capacidad ? true : false;
 }
 
 bool hash_iter_avanzar(hash_iter_t *iter) {
-    if (iter->hash->cantidad == 0) return false;
+    bool ok = true;
 
-    while (iter->hash->tabla[iter->pos_alan].estado != OCUPADO) iter->pos_alan++;
-
-    if (hash_iter_al_final(iter)) return false;
-    iter->pos_barbara++;
-    return true;
+    if (iter->hash->cantidad == 0 || hash_iter_al_final(iter)) ok = false;
+    
+    if (ok) {
+        while (ok && iter->hash->tabla[iter->pos_alan].estado != OCUPADO) {
+            iter->pos_alan++;
+            if (iter->pos_alan == iter->hash->capacidad) ok = false;
+        }
+    }
+    return ok;
 }
 
 const char *hash_iter_ver_actual(const hash_iter_t *iter) {
-    if (iter->hash->tabla[iter->pos_alan].estado == VACIO) return NULL;
-    return iter->hash->tabla[iter->pos_alan].clave;
+    return hash_iter_al_final(iter) ? NULL : iter->hash->tabla[iter->pos_alan].clave;
 }
 
 void hash_iter_destruir(hash_iter_t* iter) {
