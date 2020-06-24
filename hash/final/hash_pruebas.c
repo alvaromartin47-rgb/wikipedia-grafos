@@ -358,16 +358,19 @@ static void prueba_hash_iterar_volumen(size_t largo)
 
     for (i = 0; i < largo; i++) {
         if ( hash_iter_al_final(iter) ) {
+            printf("Llego antes al final\n");
             ok = false;
             break;
         }
         clave = hash_iter_ver_actual(iter);
         if ( clave == NULL ) {
+            printf("Actual es NULL\n");
             ok = false;
             break;
         }
         valor = hash_obtener(hash, clave);
         if ( valor == NULL ) {
+            printf("Valor es NULL\n");
             ok = false;
             break;
         }
