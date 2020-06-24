@@ -8,7 +8,7 @@
 
 /*********************CONSTANTES Y DEFINICIONES*********************/
 
-#define CAPACIDAD_MINIMA 10000
+#define CAPACIDAD_MINIMA 97
 #define FACTOR_CARGA 0.7
 typedef enum estados {VACIO, OCUPADO, BORRADO} estados_t;
 
@@ -193,22 +193,27 @@ Pre: el hash fue creado, _pos_ es una posición valida de la tabla de _hash_.
 Post: se moficó una celda y su estado cambió  a _estado_.
 */
 void modif_celda(hash_t *hash, char *clave, void *dato, size_t pos, estados_t estado) {
+    celda_t *celda = &hash->tabla[pos];
+    
     if (estado == BORRADO) {
-        free(hash->tabla[pos].clave);
-        hash->tabla[pos].clave = NULL;
-        hash->tabla[pos].valor = NULL;
+        free(celda->clave);
         hash->cantidad--;
         hash->borrados++;
-    
+        celda->clave = NULL;
+        celda->valor = NULL;
+        
     } else {
-        if (clave) {
-            hash->tabla[pos].clave = clave;
+        if (celda->estado == OCUPADO) {
+            free(hash->tabla[pos].clave);
+        }
+        else {
             hash->cantidad++;
         }
-        hash->tabla[pos].valor = dato;
+        celda->clave = clave;
+        celda->valor = dato;
     }
     
-    hash->tabla[pos].estado = estado;
+    celda->estado = estado;
 }
 
 /*
@@ -271,9 +276,9 @@ bool hash_guardar(hash_t *hash, const char *clave, void *dato) {
     
     if (estado == OCUPADO) {
         if (hash->destructor_dato) hash->destructor_dato(hash->tabla[pos].valor);
-        modif_celda(hash, NULL, dato, pos, OCUPADO);
+    }
     
-    } else modif_celda(hash, clave_copia, dato, pos, OCUPADO);
+    modif_celda(hash, clave_copia, dato, pos, OCUPADO);
 
     return true;
 }
@@ -334,10 +339,6 @@ hash_iter_t *hash_iter_crear(const hash_t *hash) {
     return iter;
 }
 
-bool hash_iter_al_final(const hash_iter_t *iter) {
-    return iter->pos_iter == iter->hash->capacidad ? true : false;
-}
-
 bool hash_iter_avanzar(hash_iter_t *iter) {
     bool ok = true;
 
@@ -350,12 +351,16 @@ bool hash_iter_avanzar(hash_iter_t *iter) {
             else if (iter->hash->tabla[iter->pos_iter].estado == OCUPADO) break;    
         }
     }
-    // printf("Pos: %ld\n", iter->pos_iter);
+
     return ok;
 }
 
 const char *hash_iter_ver_actual(const hash_iter_t *iter) {
     return hash_iter_al_final(iter) ? NULL : iter->hash->tabla[iter->pos_iter].clave;
+}
+
+bool hash_iter_al_final(const hash_iter_t *iter) {
+    return iter->pos_iter == iter->hash->capacidad ? true : false;
 }
 
 void hash_iter_destruir(hash_iter_t* iter) {
