@@ -260,7 +260,7 @@ bool hash_guardar(hash_t *hash, const char *clave, void *dato) {
     if (!clave) return NULL;
     
     if ((double)(hash->cantidad + hash->borrados) / (double)hash->capacidad >= FACTOR_CARGA) {
-        if (!hash_redimensionar(hash, hash->capacidad * 2)) {return false;
+        if (!hash_redimensionar(hash, hash->capacidad * 2)) return false;
     }
 
     char *clave_copia = strdup(clave);
@@ -271,7 +271,9 @@ bool hash_guardar(hash_t *hash, const char *clave, void *dato) {
     
     if (estado == OCUPADO) estado = resolver_colision(hash, clave_copia, &pos, 1);
     
-    if (estado == OCUPADO) hash->destructor_dato(hash->tabla[pos].valor);
+    if (estado == OCUPADO) {
+        if (hash->destructor_dato) hash->destructor_dato(hash->tabla[pos].valor);
+    }
     
     modif_celda(hash, clave_copia, dato, pos, OCUPADO);
 
@@ -312,7 +314,7 @@ void hash_destruir(hash_t *hash) {
     for (size_t i=0; i < hash->capacidad; i++) {
         if (hash->tabla[i].estado == OCUPADO) {
             void *valor = hash_borrar(hash, hash->tabla[i].clave);
-            hash->destructor_dato(valor);
+            if (hash->destructor_dato) hash->destructor_dato(valor);
         }
     }
     free(hash->tabla);
