@@ -212,7 +212,6 @@ static void prueba_hash_valor_null()
 static void prueba_hash_volumen(size_t largo, bool debug)
 {
     hash_t* hash = hash_crear(NULL);
-    printf("hola\n");
 
     const size_t largo_clave = 10;
     char (*claves)[largo_clave] = malloc(largo * largo_clave);
@@ -375,6 +374,7 @@ static void prueba_hash_iterar_volumen(size_t largo)
         *valor = largo;
         hash_iter_avanzar(iter);
     }
+
     print_test("Prueba hash iteración en volumen", ok);
     print_test("Prueba hash iteración en volumen, recorrio todo el largo", i == largo);
     print_test("Prueba hash iterador esta al final, es true", hash_iter_al_final(iter));
