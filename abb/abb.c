@@ -8,6 +8,7 @@
 /******************************DECLARACIONES*********************************/
 
 typedef struct nodo nodo_t;
+typedef enum tipos {BUSCAR, GUARDAR, BORRAR} tipos_t;
 
 abb_t* abb_crear(abb_comparar_clave_t cmp, abb_destruir_dato_t destruir_dato);
 bool abb_guardar(abb_t *arbol, const char *clave, void *dato);
@@ -18,7 +19,7 @@ size_t abb_cantidad(abb_t *arbol);
 void abb_destruir(abb_t *arbol);
 
 nodo_t *buscar_nodo(nodo_t *actual, nodo_t **padre, const char *clave, abb_comparar_clave_t cmp);
-nodo_t *wrp_buscar_nodo(const abb_t *abb, const char *clave, size_t tipo);
+nodo_t *wrp_buscar_nodo(const abb_t *abb, const char *clave, tipos_t tipo);
 void reemplazar_dato(abb_t *abb, nodo_t *actual, nodo_t *nodo);
 void insertar_derecha(abb_t *abb, nodo_t *nodo_padre, nodo_t *nodo_hijo);
 void insertar_izquierda(abb_t *abb, nodo_t *nodo_padre, nodo_t *nodo_hijo);
@@ -83,7 +84,6 @@ void nodo_destruir(nodo_t *nodo, abb_destruir_dato_t destruir_dato) {
  * *****************************************************************/
 
 abb_t *abb_crear(abb_comparar_clave_t cmp, abb_destruir_dato_t destruir_dato) {
-    
     abb_t *abb = malloc(sizeof(abb_t));
     if (!abb) return NULL;
 
@@ -93,7 +93,6 @@ abb_t *abb_crear(abb_comparar_clave_t cmp, abb_destruir_dato_t destruir_dato) {
     abb->raiz = NULL;
 
     return abb;
-
 }
 
 bool abb_guardar(abb_t *abb, const char *clave, void *valor) {
@@ -109,7 +108,7 @@ bool abb_guardar(abb_t *abb, const char *clave, void *valor) {
     nodo_hijo->clave = clave_copia;
     nodo_hijo->valor = valor;
 
-    nodo_t *nodo_padre = wrp_buscar_nodo(abb, clave, 2);
+    nodo_t *nodo_padre = wrp_buscar_nodo(abb, clave, GUARDAR);
 
     modif_nodo(abb, nodo_padre, nodo_hijo);
 
@@ -121,7 +120,7 @@ void *abb_borrar(abb_t *abb, const char *clave) {
 
     if (!clave) return NULL;
 
-    nodo_t *nodo = wrp_buscar_nodo(abb, clave, 1);
+    nodo_t *nodo = wrp_buscar_nodo(abb, clave, BUSCAR);
 
     // Si el arbol está vacío o no coincide su clave
     if (!nodo || abb->cmp(clave, nodo->clave) != 0) return NULL;
@@ -138,12 +137,12 @@ size_t abb_cantidad(abb_t *abb) {
 }
 
 void *abb_obtener(const abb_t *abb, const char *clave) {
-    nodo_t *nodo = wrp_buscar_nodo(abb, clave, 1);
+    nodo_t *nodo = wrp_buscar_nodo(abb, clave, BUSCAR);
     return !nodo || abb->cmp(clave, nodo->clave) != 0 ? NULL : nodo->valor;
 }
 
 bool abb_pertenece(const abb_t *abb, const char *clave) {
-    nodo_t *nodo = wrp_buscar_nodo(abb, clave, 1);
+    nodo_t *nodo = wrp_buscar_nodo(abb, clave, BUSCAR);
     return !nodo || abb->cmp(clave, nodo->clave) != 0 ? false : true;
 }
 
@@ -184,21 +183,21 @@ nodo_t *buscar_nodo(nodo_t *actual, nodo_t **padre, const char *clave, abb_compa
 Recibe un abb, una clave y un tipo. Busca el nodo que contiene _clave_ y a su padre,
 luego dependiendo el tipo de busqueda para el que fue llamado la funcion devuelve
 el padre o el nodo que posee _clave_. Los tipos pueden ser tres:
-Tipo 1: buscar un nodo en el abb, devuelve el nodo o NULL si no se encuentra.
-Tipo 2: buscar un nodo en el abb para luego guardar, devuelve el padre si el buscado
+Tipo BUSCAR: buscar un nodo en el abb, devuelve el nodo o NULL si no se encuentra.
+Tipo GUARDAR: buscar un nodo en el abb para luego guardar, devuelve el padre si el buscado
 es NULL (no existe), o el buscado si efectivamente coinciden las claves.
-Tipo 3: buscar un nodo en el abb para luego borrar, devuelve siempre el padre.
+Tipo BORRAR: buscar un nodo en el abb para luego borrar, devuelve siempre el padre.
 Pre: el arbol fue creado.
 Post: se devolvio un nodo o NULL.
 */
-nodo_t *wrp_buscar_nodo(const abb_t *abb, const char *clave, size_t tipo) {
+nodo_t *wrp_buscar_nodo(const abb_t *abb, const char *clave, tipos_t tipo) {
 
     nodo_t *padre = abb->raiz;
     nodo_t *actual = buscar_nodo(abb->raiz, &padre, clave, abb->cmp);
 
     // Si la busqueda fué para borrar nodo, o fue para guardar y no existe una clave igual
     // a la cual reemplazar devuelvo en ambos casos el padre.
-    if (tipo == 3 || (tipo == 2 && !actual)) return padre;
+    if (tipo == BORRAR || (tipo == GUARDAR && !actual)) return padre;
     
     // Si solo se trata de una busqueda, o una busqueda para insertar en la cual coinciden
     // las claves, devuelvo el actual.
@@ -342,7 +341,7 @@ Post se borró _actual_ del arbol y se mantuvo la condición de abb.
 */
 void *borrar_sin_hijos(abb_t *abb, nodo_t *actual) {
 
-    nodo_t *padre = wrp_buscar_nodo(abb, actual->clave, 3);
+    nodo_t *padre = wrp_buscar_nodo(abb, actual->clave, BORRAR);
     void *dato = actual->valor;
 
     int cmp = abb->cmp(actual->clave, padre->clave);
@@ -370,7 +369,7 @@ Post se borró _actual_ del arbol y se mantuvo la condición de abb.
 */
 void *borrar_con_un_hijo(abb_t *abb, nodo_t *actual) {
 
-    nodo_t *padre = wrp_buscar_nodo(abb, actual->clave, 3);
+    nodo_t *padre = wrp_buscar_nodo(abb, actual->clave, BORRAR);
     
 
     void *dato = actual->valor;
