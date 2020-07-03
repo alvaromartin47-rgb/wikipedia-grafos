@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "pila.h"
+
 /******************************DECLARACIONES*********************************/
 
 typedef struct nodo nodo_t;
@@ -30,6 +32,8 @@ void *borrar_sin_hijos(abb_t *abb, nodo_t *actual);
 void *borrar_con_un_hijo(abb_t *abb, nodo_t *actual);
 void *borrar_con_dos_hijos(abb_t *abb, nodo_t *actual);
 void *borrar_nodo(abb_t *abb, nodo_t *actual);
+void abb_iterar(nodo_t *actual, bool visitar(const char *, void *, void *), void *extra);
+void apilar_izq(nodo_t *nodo, pila_t *pila);
 
 /****************************************************************************/
 
@@ -52,6 +56,10 @@ struct nodo {
     struct nodo *h_der;
     char *clave;
     void *valor;
+};
+
+struct abb_iter{
+    pila_t *pila;
 };
 
 /************************PRIMITIVAS NODO****************************/
@@ -149,6 +157,52 @@ bool abb_pertenece(const abb_t *abb, const char *clave) {
 void abb_destruir(abb_t *abb) {
     wrp_destruir_recursivo(abb);
     free(abb);
+}
+
+//Primitivas de iteradores
+
+void abb_in_order(abb_t *arbol, bool visitar(const char *, void *, void *), void *extra){
+    abb_iterar(arbol->raiz, visitar, extra);
+}
+
+abb_iter_t *abb_iter_in_crear(const abb_t *arbol){
+    abb_iter_t *iter = malloc(sizeof(abb_iter_t));
+    if (!iter) return NULL;
+
+    iter->pila = pila_crear();
+    if (!iter->pila){
+        free(iter);
+        return NULL;
+    }
+    pila_apilar(iter->pila, arbol->raiz);
+    apilar_izq((arbol->raiz)->h_izq, iter->pila);
+
+    return iter;
+}
+
+bool abb_iter_in_avanzar(abb_iter_t *iter){
+    if (abb_iter_in_al_final(iter)) return false;
+
+    nodo_t *desapilado = pila_desapilar(iter->pila);
+    if (desapilado->h_der){
+        apilar_izq(desapilado->h_der, iter->pila);
+    }
+
+    return true;
+}
+
+const char *abb_iter_in_ver_actual(const abb_iter_t *iter){
+    nodo_t *tope = pila_ver_tope(iter->pila);
+    return tope->clave;
+}
+
+bool abb_iter_in_al_final(const abb_iter_t *iter){
+    return (pila_esta_vacia(iter->pila));
+}
+
+void abb_iter_in_destruir(abb_iter_t* iter){
+    pila_destruir(iter->pila);
+    free(iter);
 }
 
 /*******************************************************************/
@@ -455,4 +509,21 @@ void *borrar_nodo(abb_t *abb, nodo_t *actual) {
 
 }
 
+/*Recibe el nodo actual de donde se encuentra el iterador, la función de callback visitar y el extra.
+Itera el abb in order de manera recursiva y le aplica la función visitar en el nodo que esté parado.*/
+void abb_iterar(nodo_t *actual, bool visitar(const char *, void *, void *), void *extra){
+    if (!actual) return;
+
+    abb_iterar(actual->h_izq, visitar, extra);
+    if (!visitar(actual->clave, actual->valor, extra)) return;
+    abb_iterar(actual->h_der, visitar, extra);
+}
+
+/*Recibe un nodo del abb y una pila. Apila el nodo actual pasado por parametro y los hijos izquierdos del nodo, 
+en caso de tenerlos, en la pila.*/
+void apilar_izq(nodo_t *actual, pila_t *pila){
+    if (!actual) return;
+    pila_apilar(pila, actual);
+    apilar_izq(actual->h_izq, pila);
+}
 /*******************************************************************/

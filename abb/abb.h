@@ -87,7 +87,7 @@ void abb_destruir(abb_t *arbol);
 
 /*
 Recorre al abb en orden in order y se le aplica la función visitar en cada clave, dato.
-Pre: el abb fue creado.
+Pre: el abb fue creado y la función visitar existe.
 Post: se aplicó la función visitar.
 */
 void abb_in_order(abb_t *arbol, bool visitar(const char *, void *, void *), void *extra);
@@ -111,7 +111,7 @@ bool abb_iter_in_avanzar(abb_iter_t *iter);
 
 /*
 Devuelve la clave en donde se encuentra el iterador.
-Pre: el abb y su iteradon externo fueron creados.
+Pre: el abb y su iterador externo fueron creados.
 */
 const char *abb_iter_in_ver_actual(const abb_iter_t *iter);
 

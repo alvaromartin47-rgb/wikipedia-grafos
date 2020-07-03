@@ -47,6 +47,11 @@ bool obt_aleatorios_y_guardar(abb_t *abb, hash_t *hash, char **claves, size_t la
 
 }
 
+bool sumar_todos(const char *clave, void *dato, void *total){
+    *(int*)total += *(int*)dato;
+    return true;
+}
+
 
 /* ******************************************************************
  *                        PRUEBAS UNITARIAS                         *
@@ -341,6 +346,119 @@ void prueba_abb_volumen(size_t largo) {
     free(claves_aux);
 }
 
+void pruebas_abb_iterador_ext(){
+    printf("\nINICIO PRUEBAS ITERADOR EXTERNO\n");
+
+    abb_t *abb = abb_crear(strcmp, NULL);
+
+    char *claves[] = {"a", "b", "c"};
+    int valor[] = {1, 2, 3};
+
+    //Agrego tres claves con valor asociado al abb.
+    print_test("Se agregó correctamente la clave y su valor asociado.", abb_guardar(abb, claves[0], &valor[0]));
+    print_test("Se agregó correctamente la clave y su valor asociado.", abb_guardar(abb, claves[1], &valor[1]));
+    print_test("Se agregó correctamente la clave y su valor asociado.", abb_guardar(abb, claves[2], &valor[2]));
+
+    abb_iter_t* iter = abb_iter_in_crear(abb);
+    print_test("El iterador no está al final.", !abb_iter_in_al_final(iter));
+
+    for (size_t i = 0; !abb_iter_in_al_final(iter); i++){
+        print_test("El iterador está en la posición correcta", strcmp(abb_iter_in_ver_actual(iter), claves[i]) == 0);
+        print_test("El iterador avanzó una posición.", abb_iter_in_avanzar(iter));
+    }
+
+    print_test("El iterador está al final.", abb_iter_in_al_final(iter));
+
+    abb_iter_in_destruir(iter);
+    print_test("Se destruyó el iterador correctamente", true);
+    abb_destruir(abb);
+    print_test("Se destruyó el árbol correctamente.", true);
+}
+
+void pruebas_abb_iterador_int(){
+    printf("\nINICIO PRUEBAS ITERADOR INTERNO\n");
+
+    abb_t *abb = abb_crear(strcmp, NULL);
+
+    char *claves[] = {"milanesa", "fideos", "torta", "pan"};
+    int valor[] = {1, 2, 3, 4};
+
+    //Agrego tres claves con valor asociado al abb.
+    print_test("Se agregó correctamente la clave y su valor asociado.", abb_guardar(abb, claves[0], &valor[0]));
+    print_test("Se agregó correctamente la clave y su valor asociado.", abb_guardar(abb, claves[1], &valor[1]));
+    print_test("Se agregó correctamente la clave y su valor asociado.", abb_guardar(abb, claves[2], &valor[2]));
+    print_test("Se agregó correctamente la clave y su valor asociado.", abb_guardar(abb, claves[3], &valor[3]));
+
+    size_t total = 0;
+    abb_in_order(abb, sumar_todos, &total);
+
+    print_test("El resultado de sumar todas los valores es correcto", total == 10);
+
+    abb_destruir(abb);
+}
+
+void pruebas_iter_volumen(size_t largo){
+    printf("\nINICIO PRUEBAS DE VOLUMEN CON ITERADOR\n");
+
+    abb_t *abb = abb_crear(cmp_enteros, NULL);
+
+    size_t largo_clave = 10;
+    char (*claves)[largo_clave] = malloc(largo * largo_clave);
+    size_t valores[largo];
+
+    bool ok = true;
+    size_t num;
+    for (size_t i = 0; i < largo && ok; i++){
+        num = (size_t)rand() % largo;
+        sprintf(claves[i], "%ld", num);
+        
+        while(abb_pertenece(abb, claves[i])){
+            sprintf(claves[i], "%ld", (size_t)rand() % largo);
+        }
+
+        valores[i] = i;
+        ok &= abb_guardar(abb, claves[i], &valores[i]);
+    }
+
+    print_test("Se guardaron todos los pares de clave, valor en el árbol", ok);
+
+    abb_iter_t *iter = abb_iter_in_crear(abb);
+    print_test("El iterador no está al final", !abb_iter_in_al_final(iter));
+
+    ok = true;
+
+    const char* clave;
+    void* valor;
+    size_t i;
+
+    for (i = 0; i < largo; i++) {
+        if (abb_iter_in_al_final(iter)) {
+            ok = false;
+            break;
+        }
+        clave = abb_iter_in_ver_actual(iter);
+        if (clave == NULL) {
+            ok = false;
+            break;
+        }
+        valor = abb_obtener(abb, clave);
+        if (valor == NULL) {
+            ok = false;
+            break;
+        }
+        *(size_t*)valor = largo;
+        abb_iter_in_avanzar(iter);
+    }
+
+    print_test("Prueba abb iterador volumen", ok);
+    print_test("El iterador recorrió todo el largo", i == largo);
+    print_test("El iterador está al final", abb_iter_in_al_final(iter));
+
+    free(claves);
+    abb_iter_in_destruir(iter);
+    abb_destruir(abb);
+}
+   
 /* ******************************************************************
  *                        FUNCIÓN PRINCIPAL                         *
  * *****************************************************************/
@@ -356,5 +474,7 @@ void pruebas_abb_alumno() {
     prueba_abb_clave_vacia();
     prueba_abb_valor_null();
     prueba_abb_volumen(5000);
-
+    pruebas_abb_iterador_ext();
+    pruebas_iter_volumen(5000);
+    pruebas_abb_iterador_int();
 }
