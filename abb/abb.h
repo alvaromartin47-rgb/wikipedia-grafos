@@ -10,6 +10,7 @@
 
 // Structs a usar.
 typedef struct abb abb_t;
+typedef struct abb_iter abb_iter_t;
 
 // Funcion de comparacion de claves y funcion de destruccion de datos.
 typedef int (*abb_comparar_clave_t) (const char *, const char *);
@@ -77,5 +78,54 @@ Pre: el arbol fue creado.
 Post: el abb y sus elementos no existen mas en memoria.
 */
 void abb_destruir(abb_t *arbol);
+
+/* *****************************************************************
+ *                    ITERADORES Y PRIMITIVAS                      *
+ * *****************************************************************/
+
+/* Iterador interno del abb */
+
+/*
+Recorre al abb en orden in order y se le aplica la función visitar en cada clave, dato.
+Pre: el abb fue creado.
+Post: se aplicó la función visitar.
+*/
+void abb_in_order(abb_t *arbol, bool visitar(const char *, void *, void *), void *extra);
+
+
+/* Iterador externo del abb */
+
+/*
+Crea un iterador externo del abb.
+Pre: el abb fue creado.
+Post: se creó un iterador externo en la primera posición del abb.
+*/
+abb_iter_t *abb_iter_in_crear(const abb_t *arbol);
+
+/*
+Avanza un lugar en el iterador del abb. Devuelve verdadero si puede avanzar y falso, en caso contrario.
+Pre: el abb y su iterador externo fueron creados.
+Post: avanza una posición.
+*/
+bool abb_iter_in_avanzar(abb_iter_t *iter);
+
+/*
+Devuelve la clave en donde se encuentra el iterador.
+Pre: el abb y su iteradon externo fueron creados.
+*/
+const char *abb_iter_in_ver_actual(const abb_iter_t *iter);
+
+/*
+Devuelve verdadero si el iterador llegó al último elemento del abb, en caso contrario, falso.
+Pre: el abb y su iterador externo fueron creados.
+*/
+bool abb_iter_in_al_final(const abb_iter_t *iter);
+
+/*
+Destruye el iterador externo del abb.
+Pre: el abb y su iterador externo fueron creados.
+Post: se destruyó el iterador externo del abb.
+*/
+void abb_iter_in_destruir(abb_iter_t* iter);
 
 #endif // ABB_H
