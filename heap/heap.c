@@ -73,7 +73,7 @@ bool heap_encolar(heap_t *heap, void *elem) {
 void *heap_desencolar(heap_t *heap) {
     if (heap_esta_vacio(heap)) return NULL;
 
-    void *dato = heap->datos[heap_cantidad(heap) - 1];
+    void *dato = heap->datos[0];
     heap->datos[0] = heap->datos[heap_cantidad(heap) - 1];
     
     downheap(heap->datos, (int)heap_cantidad(heap), heap->cmp, 0);
