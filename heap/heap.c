@@ -12,6 +12,24 @@
  *                        PRIMITIVAS HEAP                          *
  * *****************************************************************/
 
+heap_t *heap_crear(cmp_func_t cmp) {
+    heap_t *heap = malloc(sizeof(heap_t));
+    if (!heap) return NULL;
+
+    void **n_datos = malloc(sizeof(void*) * CAP_INICIAL);
+    if (!n_datos) {
+        free(heap);
+        return NULL;
+    }
+
+    heap->datos = n_datos;
+    heap->cantidad = 0;
+    heap->capacidad = CAP_INICIAL;
+    heap->cmp = cmp;
+
+    return heap;
+}
+
 heap_t *heap_crear_arr(void *arreglo[], size_t n, cmp_func_t cmp) {
     heap_t *heap = heap_crear(cmp);
     if (!heap) return NULL;    
@@ -39,24 +57,6 @@ void heap_sort(void *elementos[], size_t cant, cmp_func_t cmp) {
     }
 }
 
-heap_t *heap_crear(cmp_func_t cmp) {
-    heap_t *heap = malloc(sizeof(heap_t));
-    if (!heap) return NULL;
-
-    void **n_datos = malloc(sizeof(void*) * CAP_INICIAL);
-    if (!n_datos) {
-        free(heap);
-        return NULL;
-    }
-
-    heap->datos = n_datos;
-    heap->cantidad = 0;
-    heap->capacidad = CAP_INICIAL;
-    heap->cmp = cmp;
-
-    return heap;
-}
-
 bool heap_encolar(heap_t *heap, void *elem) {
     if (heap_cantidad(heap) == heap->capacidad) {
         if (!heap_redimensionar(heap, (heap->capacidad AUMENTAR))) return false;
@@ -73,7 +73,7 @@ bool heap_encolar(heap_t *heap, void *elem) {
 void *heap_desencolar(heap_t *heap) {
     if (heap_esta_vacio(heap)) return NULL;
 
-    void *dato = heap->datos[heap_cantidad(heap) - 1];
+    void *dato = heap->datos[0];
     heap->datos[0] = heap->datos[heap_cantidad(heap) - 1];
     
     downheap(heap->datos, (int)heap_cantidad(heap), heap->cmp, 0);
@@ -90,7 +90,7 @@ size_t heap_cantidad(const heap_t *heap) {
     return heap->cantidad;
 }
 bool heap_esta_vacio(const heap_t *heap) {
-    return heap_cantidad(heap) == 0 ? true : false;
+    return heap_cantidad(heap) == 0;
 }
 
 void *heap_ver_max(const heap_t *heap) {

@@ -53,6 +53,7 @@ int cmp_numeros(const void *elemento1, const void *elemento2){
 /* ******************************************************************
  *                        PRUEBAS UNITARIAS                         *
  * *****************************************************************/
+
 void pruebas_heap_vacio(){
     printf("\nINICIO PRUEBAS HEAP VACIO\n");
 
@@ -116,13 +117,14 @@ void pruebas_heap_NULL(){
 
 
 void prueba_heap_crear_arr(size_t largo) {
+    printf("\nINICIO PRUEBAS HEAP CREAR A PARTIR DE ARREGLO\n");
+
     hash_t *hash = hash_crear(NULL);
     char **claves = malloc(sizeof(char*) * largo);
 
     obt_aleatorios_y_guardar(hash, claves, largo);
     
-    heap_t *heap = heap_crear_arr(claves, largo, cmp_enteros);
-    //heap_sort(claves, largo, cmp_enteros);
+    heap_t *heap = heap_crear_arr((void**)claves, largo, cmp_enteros);
     
     bool ok = true;
 
@@ -130,7 +132,7 @@ void prueba_heap_crear_arr(size_t largo) {
         char *desencolado = heap_desencolar(heap);
         
         if (heap_cantidad(heap) > 1) {
-            ok = cmp(desencolado, (char*)heap_ver_max(heap)) > -1;
+            ok = cmp_enteros(desencolado, (char*)heap_ver_max(heap)) > -1;
             if (!ok) break;
         }
 
@@ -147,12 +149,14 @@ void prueba_heap_crear_arr(size_t largo) {
 }
 
 void prueba_heap_sort(size_t largo) {
+    printf("\nINICIO PRUEBAS HEAPSORT\n");
+    
     hash_t *hash = hash_crear(NULL);
     char **claves = malloc(sizeof(char*) * largo);
 
     obt_aleatorios_y_guardar(hash, claves, largo);
     
-    heap_sort(claves, largo, cmp_enteros);
+    heap_sort((void**)claves, largo, cmp_enteros);
     
     bool ok = true;
 
@@ -170,11 +174,13 @@ void prueba_heap_sort(size_t largo) {
 
 
 void pruebas_heap_alumno() {
+    
+    pruebas_heap_vacio();
+    pruebas_heap_vacio();
     prueba_heap_crear_arr(1000);
     prueba_heap_sort(1000);
-    pruebas_heap_vacio();
-    pruebas_heap_vacio();
-    pruebas_heap_volumen(5000);
+    pruebas_heap_volumen(10);
+
 }
 
 /*******************************************************************/
