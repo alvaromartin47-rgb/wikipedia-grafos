@@ -54,7 +54,7 @@ int cmp_numeros(const void *elemento1, const void *elemento2){
  *                        PRUEBAS UNITARIAS                         *
  * *****************************************************************/
 
-void pruebas_heap_vacio(){
+void prueba_heap_vacio(){
     printf("\nINICIO PRUEBAS HEAP VACIO\n");
 
     heap_t *heap = heap_crear(cmp_enteros);
@@ -101,7 +101,7 @@ void pruebas_heap_volumen(size_t largo){
     print_test("El heap se destruyó correctamente", true);
 }
 
-void pruebas_heap_NULL(){
+void prueba_heap_NULL(){
     printf("\nINICIO PRUEBAS HEAP ENCOLAR ELEMENTO NULO\n");
 
     heap_t *heap = heap_crear(cmp_enteros);
@@ -175,8 +175,8 @@ void prueba_heap_sort(size_t largo) {
 
 void pruebas_heap_alumno() {
     
-    pruebas_heap_vacio();
-    pruebas_heap_vacio();
+    prueba_heap_vacio();
+    prueba_heap_NULL();
     prueba_heap_crear_arr(1000);
     prueba_heap_sort(1000);
     pruebas_heap_volumen(10);
