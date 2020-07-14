@@ -1,5 +1,4 @@
 #include "aux.h"
-#include <stdlib.h>
 
 /* *****************************************************************
  *                      FUNCIONES AUXILIARES                       *
