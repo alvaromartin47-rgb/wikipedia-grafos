@@ -6,7 +6,7 @@ CFLAGS += -Wconversion -Wno-sign-conversion -Wbad-function-cast
 CFLAGS += -Werror
 
 test: abb_aux
-	./abb_test.py
+	python3 abb_test.py
 
 abb_aux: abb.o abb_aux.o
 

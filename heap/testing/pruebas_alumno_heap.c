@@ -4,7 +4,7 @@
 #include <string.h>
 #include "testing.h"
 #include "../heap.h"
-#include "../hash/hash.h"
+#include "tdas-aux/hash.h"
 #include <time.h>
 
 /* ******************************************************************

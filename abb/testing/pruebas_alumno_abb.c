@@ -2,9 +2,9 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
-#include "abb.h"
+#include "../abb.h"
 #include "testing.h"
-#include "hash.h"
+#include "tdas-aux/hash.h"
 #include <time.h>
 
 /* ******************************************************************
