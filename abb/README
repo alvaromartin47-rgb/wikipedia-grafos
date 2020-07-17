@@ -1,2 +1,0 @@
-Para compilacion y ejecucion automatica de valgrind ejecutar: make
-Para eliminar los archivos creados por make ejecutar: make clean

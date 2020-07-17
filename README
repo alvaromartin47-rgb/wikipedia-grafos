@@ -1,0 +1,4 @@
+Para compilacion y ejecucion automatica de valgrind ejecutar: make <tda-name_t>
+Ejemplo -> make abb_t
+
+Para eliminar los archivos creados por make ejecutar: make clean
