@@ -2,9 +2,9 @@ CFLAGS = -g -std=c99 -Wall -Wconversion -Wtype-limits -pedantic -Werror
 VFLAGS = --leak-check=full --track-origins=yes --show-reachable=yes
 
 # ARCHIVOS .C DE COMPILACION DE CADA TDA
-ARCH_C_HASH = hash/*.c hash/testing/*.c
-ARCH_C_ABB = abb/*.c abb/testing/*.c abb/testing/tdas-aux/*.c
-ARCH_C_HEAP = heap/*.c heap/testing/*.c heap/testing/tdas-aux/*.c
+ARCH_C_HASH = hash/hash_t/*.c hash/testing/*.c
+ARCH_C_ABB = abb/abb_t/*.c abb/abb_t/nodo/*.c abb/testing/*.c abb/testing/tdas-aux/*.c
+ARCH_C_HEAP = heap/heap_t/*.c heap/testing/*.c heap/testing/tdas-aux/*.c
 
 # EJECUTABLES A BORRAR
 REMOVE = pruebas_hash pruebas_abb pruebas_heap

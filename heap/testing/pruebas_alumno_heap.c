@@ -3,7 +3,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include "testing.h"
-#include "../heap.h"
+#include "../heap_t/heap.h"
 #include "tdas-aux/hash.h"
 #include <time.h>
 

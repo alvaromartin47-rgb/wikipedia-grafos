@@ -5,7 +5,7 @@
  * Licencia: CC-BY-SA 2.5 (ar) ó CC-BY-SA 3.0
  */
 
-#include "../hash.h"
+#include "../hash_t/hash.h"
 #include "testing.h"
 
 #include <stdio.h>
