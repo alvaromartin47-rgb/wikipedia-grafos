@@ -1,0 +1,29 @@
+name: C/C++ CI
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install valgrind
+      run: sudo apt install -y valgrind
+    - name: Compile hash
+      run: make hash_t
+    - name: Execute testing hash with valgrind
+      run: valgrind --leak-check=full --track-origins=yes --show-reachable=yes ./pruebas_hash
+    - name: Compile abb
+      run: make abb_t
+    - name: Execute testing abb with valgrind
+      run: valgrind --leak-check=full --track-origins=yes --show-reachable=yes ./pruebas_abb
+    - name: Compile heap
+      run: make heap_t
+    - name: Execute testing heap with valgrind
+      run: valgrind --leak-check=full --track-origins=yes --show-reachable=yes ./pruebas_heap
+    - name: Clean
+      run: make clean
