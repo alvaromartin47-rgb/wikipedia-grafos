@@ -1,0 +1,23 @@
+name: C/C++ CI
+
+on:
+  push:
+    branches: [ master ]
+    paths:
+    - 'heap_t/**'
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install valgrind...
+      run: sudo apt install -y valgrind
+    - name: Compile heap...
+      run: make heap_t
+    - name: Execute testing heap with valgrind...
+      run: valgrind --leak-check=full --track-origins=yes --show-reachable=yes ./pruebas_heap
+    - name: Clean...
+      run: make clean

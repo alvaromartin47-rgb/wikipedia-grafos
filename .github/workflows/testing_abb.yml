@@ -1,0 +1,23 @@
+name: C/C++ CI
+
+on:
+  push:
+    branches: [ master ]
+    paths:
+    - 'abb_t/**'
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install valgrind...
+      run: sudo apt install -y valgrind
+    - name: Compile abb...
+      run: make abb_t
+    - name: Execute testing abb with valgrind...
+      run: valgrind --leak-check=full --track-origins=yes --show-reachable=yes ./pruebas_abb
+    - name: Clean...
+      run: make clean
