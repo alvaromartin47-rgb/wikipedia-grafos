@@ -1,0 +1,21 @@
+name: C/C++ CI
+
+on:
+  push:
+    branches: [ master ]
+    paths:
+    - 'tp2/**'
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install valgrind...
+      run: sudo apt install -y valgrind
+    - name: Compile and execute tp2...
+      run: testing_scripts/test_tp2.sh
+    - name: Clean...
+      run: make clean

@@ -19,12 +19,15 @@ typedef enum tipos {BUSCAR, GUARDAR, BORRAR} tipos_t;
 struct abb {
     nodo_abb_t *raiz;
     size_t cantidad;
-    abb_comparar_clave_t cmp;
+    abb_cmp_clave_t cmp;
     abb_destruir_dato_t destruir_dato;
 };
 
 struct abb_iter{
     pila_t *pila;
+    char *inicio;
+    char *fin;
+    abb_cmp_clave_t cmp;
 };
 
 struct nodo_abb {
@@ -45,7 +48,7 @@ buscado en cada llamado.
 Pre: _cmp_ es una funcion de comparacion.
 Post: se devolvio un nodo o NULL.
 */
-nodo_abb_t *buscar_nodo(nodo_abb_t *actual, nodo_abb_t **padre, const char *clave, abb_comparar_clave_t cmp);
+nodo_abb_t *buscar_nodo(nodo_abb_t *actual, nodo_abb_t **padre, const char *clave, abb_cmp_clave_t cmp);
 
 /*
 Recibe un abb, una clave y un tipo. Busca el nodo que contiene _clave_ y a su padre,
@@ -162,15 +165,17 @@ la condición de abb.
 void *borrar_nodo(abb_t *abb, nodo_abb_t *actual);
 
 /*
-Recibe el nodo actual de donde se encuentra el iterador, la función de callback visitar y el extra.
-Itera el abb in order de manera recursiva y le aplica la función visitar en el nodo que esté parado.
+Recibe el nodo raiz del abb, la función de callback visitar, un inicio, un fin, un booleano,
+una funcion de comparación y un extra.
+Itera el abb in order de manera recursiva en el rango [ini, fin] y le aplica la función visitar
+en el nodo que se encuentre.
 */
-void abb_iterar(nodo_abb_t *actual, bool visitar(const char *, void *, void *), void *extra, bool *ok);
+void abb_iterar(nodo_abb_t *act, char *ini, char *fin, visitar_t visitar, void *extra, bool *ok, abb_cmp_clave_t cmp);
 
 /*
 Recibe un nodo del abb y una pila. Apila el nodo actual pasado por parametro y los hijos izquierdos del nodo, 
 en caso de tenerlos, en la pila.
 */
-void apilar_izq(nodo_abb_t *actual, pila_t *pila);
+void apilar_inicial(nodo_abb_t *actual, pila_t *pila);
 
 #endif // AUX_H

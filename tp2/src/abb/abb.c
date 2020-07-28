@@ -4,7 +4,7 @@
  *                         PRIMITIVAS ABB                          *
  * *****************************************************************/
 
-abb_t *abb_crear(abb_comparar_clave_t cmp, abb_destruir_dato_t destruir_dato) {
+abb_t *abb_crear(abb_cmp_clave_t cmp, abb_destruir_dato_t destruir_dato) {
     abb_t *abb = malloc(sizeof(abb_t));
     if (!abb) return NULL;
 
@@ -74,9 +74,9 @@ void abb_destruir(abb_t *abb) {
 
 /************************PRIMITIVAS ITERADORES**********************/
 
-void abb_in_order(abb_t *arbol, bool visitar(const char *, void *, void *), void *extra) {
+void abb_in_order(abb_t *arbol, char *ini, char *fin, bool visitar(const char *, void *, void *), void *extra) {
     bool ok = true;
-    abb_iterar(arbol->raiz, visitar, extra, &ok);
+    abb_iterar(arbol->raiz, ini, fin, visitar, extra, &ok, arbol->cmp);
 }
 
 abb_iter_t *abb_iter_in_crear(const abb_t *arbol) {
@@ -89,7 +89,7 @@ abb_iter_t *abb_iter_in_crear(const abb_t *arbol) {
         return NULL;
     }
 
-    apilar_izq(arbol->raiz, iter->pila);
+    apilar_inicial(arbol->raiz, iter->pila);
 
     return iter;
 }
@@ -99,7 +99,7 @@ bool abb_iter_in_avanzar(abb_iter_t *iter) {
 
     nodo_abb_t *desapilado = pila_desapilar(iter->pila);
     if (desapilado->h_der) {
-        apilar_izq(desapilado->h_der, iter->pila);
+        apilar_inicial(desapilado->h_der, iter->pila);
     }
 
     return true;

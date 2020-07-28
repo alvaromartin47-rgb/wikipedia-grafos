@@ -4,7 +4,7 @@
  *                      FUNCIONES AUXILIARES                       *
  * *****************************************************************/
 
-nodo_abb_t *buscar_nodo(nodo_abb_t *actual, nodo_abb_t **padre, const char *clave, abb_comparar_clave_t cmp) {
+nodo_abb_t *buscar_nodo(nodo_abb_t *actual, nodo_abb_t **padre, const char *clave, abb_cmp_clave_t cmp) {
     
     if (!actual) return NULL;
 
@@ -205,19 +205,34 @@ void *borrar_nodo(abb_t *abb, nodo_abb_t *actual) {
 
 }
 
-void abb_iterar(nodo_abb_t *actual, bool visitar(const char *, void *, void *), void *extra, bool *ok) {
-    if (!actual) return;
+void abb_iterar(nodo_abb_t *act, char *ini, char *fin, visitar_t visitar, void *extra, bool *ok, abb_cmp_clave_t cmp) {
+    if (!act) return;
 
-    abb_iterar(actual->h_izq, visitar, extra, ok);
+    int cmp_ini = 0;
+    int cmp_fin = 0;
+
+    if (!ini || !fin) {
+        if (ini) cmp_fin = 1;
+        else cmp_ini = -1;
+    }
     
-    if (*ok) *ok = visitar(actual->clave, actual->valor, extra);
-    else return;
+    if (ini) cmp_ini = cmp(ini, act->clave);
+    if (fin) cmp_fin = cmp(fin, act->clave);
 
-    abb_iterar(actual->h_der, visitar, extra, ok);
+    if (cmp_ini < 0) abb_iterar(act->h_izq, ini, fin, visitar, extra, ok, cmp);
+
+    if (*ok && cmp_fin > -1 && cmp_ini < 1) {
+        *ok = visitar(act->clave, act->valor, extra);
+        if (cmp_fin == 0) *ok = false;
+    }
+    else if (!*ok) return;
+
+    abb_iterar(act->h_der, ini, fin, visitar, extra, ok, cmp);
 }
 
-void apilar_izq(nodo_abb_t *actual, pila_t *pila) {
+
+void apilar_inicial(nodo_abb_t *actual, pila_t *pila) {
     if (!actual) return;
     pila_apilar(pila, actual);
-    apilar_izq(actual->h_izq, pila);
+    apilar_inicial(actual->h_izq, pila);
 }

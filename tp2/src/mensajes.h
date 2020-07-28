@@ -19,6 +19,7 @@
 #define ENOENT_ANIO "Valor no numerico en campo de anio: %s\n"
 #define ENOENT_FORMATO "ERROR: formato de comando incorrecto ('%s')\n"
 #define ENOENT_CMD "ERROR: no existe el comando '%s'\n"
+#define ENOENT_ENCOLAR "ERROR: ocurrió un error interno y no se pudo encolar el paciente\n"
 
 #define ENOENT_PARAMS "ERROR: cantidad de parametros invalidos para comando '%s'\n"
 

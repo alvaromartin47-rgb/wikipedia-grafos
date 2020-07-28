@@ -76,8 +76,8 @@ size_t hash_cantidad(const hash_t *hash) {
 void hash_destruir(hash_t *hash) {
     for (size_t i=0; i < hash->capacidad; i++) {
         if (hash->tabla[i].estado == OCUPADO) {
-            void *valor = hash_borrar(hash, hash->tabla[i].clave);
-            if (hash->destructor_dato) hash->destructor_dato(valor);
+            free(hash->tabla[i].clave);
+            if (hash->destructor_dato) hash->destructor_dato(hash->tabla[i].valor);
         }
     }
     free(hash->tabla);
@@ -131,5 +131,3 @@ bool hash_iter_al_final(const hash_iter_t *iter) {
 void hash_iter_destruir(hash_iter_t* iter) {
     free(iter);
 }
-
-/*********************************************************************/

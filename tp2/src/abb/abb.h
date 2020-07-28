@@ -13,8 +13,9 @@ typedef struct abb abb_t;
 typedef struct abb_iter abb_iter_t;
 
 // Funcion de comparacion de claves y funcion de destruccion de datos.
-typedef int (*abb_comparar_clave_t) (const char *, const char *);
+typedef int (*abb_cmp_clave_t) (const char *, const char *);
 typedef void (*abb_destruir_dato_t) (void *);
+typedef bool (*visitar_t) (const char *, void *, void *);
 
 /* *****************************************************************
  *                     PRIMITIVAS DEL ABB                          *
@@ -23,7 +24,7 @@ typedef void (*abb_destruir_dato_t) (void *);
 /* 
 Crea el abb (Arbol Binario de Búsqueda).
 */
-abb_t* abb_crear(abb_comparar_clave_t cmp, abb_destruir_dato_t destruir_dato);
+abb_t* abb_crear(abb_cmp_clave_t cmp, abb_destruir_dato_t destruir_dato);
 
 /*
 Recibe un arbol binario de busqueda, una clave y un dato.
@@ -86,12 +87,12 @@ void abb_destruir(abb_t *arbol);
 /* Iterador interno del abb */
 
 /*
-Recorre al abb en orden in order y se le aplica la función visitar en cada clave, dato.
+Recorre al abb en orden in order y se le aplica la función visitar entre el rango
+[ini, fin] a cada clave, dato.
 Pre: el abb fue creado y la función visitar existe.
 Post: se aplicó la función visitar.
 */
-void abb_in_order(abb_t *arbol, bool visitar(const char *, void *, void *), void *extra);
-
+void abb_in_order(abb_t *arbol, char *ini, char *fin, visitar_t visitar, void *extra);
 
 /* Iterador externo del abb */
 
