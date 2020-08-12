@@ -1,0 +1,1 @@
+abb: abb_t/abb.o abb_t/pila.o abb_t/aux.o abb_t/nodo/nodo_abb.o testing/pruebas_alumno_abb.o testing/main_abb.o testing/testing.o testing/tdas-aux/aux.o testing/tdas-aux/hash.o

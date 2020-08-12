@@ -1,33 +1,148 @@
+# CREADO POR ALVARO MARTIN EN PYTHON :)
+
 CFLAGS = -g -std=c99 -Wall -Wconversion -Wtype-limits -pedantic
 VFLAGS = --leak-check=full --track-origins=yes --show-reachable=yes
 
-# ARCHIVOS .C DE COMPILACION DE CADA TDA
-ARCH_C_HASH = hash/hash_t/*.c hash/testing/*.c
-ARCH_C_ABB = abb/abb_t/*.c abb/abb_t/nodo/*.c abb/testing/*.c abb/testing/tdas-aux/*.c
-ARCH_C_HEAP = heap/heap_t/*.c heap/testing/*.c heap/testing/tdas-aux/*.c
-ARCH_C_TP2 = tp2/zyxcba.c tp2/src/*.c tp2/src/clinica/*.c tp2/src/hash/*.c tp2/src/heap/*.c tp2/src/sala/*.c tp2/src/csv/*.c tp2/src/cola/*.c tp2/src/lista/*.c tp2/src/persona/*.c tp2/src/abb/*.c tp2/src/nodo/*.c tp2/src/abb/nodo/*.c
+# OBJETOS A BORRAR
+REMOVE = abb/abb_t/abb.o abb/abb_t/pila.o abb/abb_t/aux.o abb/abb_t/nodo/nodo_abb.o abb/testing/pruebas_alumno_abb.o abb/testing/main_abb.o abb/testing/testing.o abb/testing/tdas-aux/aux.o abb/testing/tdas-aux/hash.o hash/hash_t/hash.o hash/hash_t/aux.o hash/testing/hash_pruebas.o hash/testing/main.o hash/testing/testing.o heap/heap_t/heap.o heap/heap_t/aux.o heap/testing/testing.o heap/testing/pruebas_alumno_heap.o heap/testing/main.o heap/testing/tdas-aux/aux.o heap/testing/tdas-aux/hash.o tp2/zyxcba.o tp2/src/strutil.o tp2/src/clinica/clinica.o tp2/src/hash/aux.o tp2/src/hash/hash.o tp2/src/heap/aux.o tp2/src/heap/heap.o tp2/src/sala/sala.o tp2/src/csv/csv.o tp2/src/cola/cola.o tp2/src/lista/lista.o tp2/src/persona/persona.o tp2/src/abb/aux.o tp2/src/abb/abb.o tp2/src/abb/pila.o tp2/src/nodo/nodo.o tp2/src/abb/nodo/nodo_abb.o tp2/src/funciones_tp2.o
 
-# EJECUTABLES A BORRAR
-REMOVE = pruebas_hash pruebas_abb pruebas_heap pruebas_tp2
-PATH_TESTING_TP2 = tp2/pruebas_zyxcba/pruebas_tp2
 
-all: 
-	@- echo "ERROR, no se detectó ningún TDA."
-	
-hash_t: $(ARCH_C_HASH)
-	$(CC) $(CFLAGS) $(ARCH_C_HASH) -o pruebas_hash
-	valgrind $(VFLAGS) ./pruebas_hash
-	
-abb_t: $(ARCH_C_ABB)
-	$(CC) $(CFLAGS) $(ARCH_C_ABB) -o pruebas_abb
-	valgrind $(VFLAGS) ./pruebas_abb
-	
-heap_t: $(ARCH_C_HEAP)
-	$(CC) $(CFLAGS) $(ARCH_C_HEAP) -o pruebas_heap
-	valgrind $(VFLAGS) ./pruebas_heap
+# COMPILACION DE OBJETOS
 
-tp2_t: $(ARCH_C_TP2)
-	$(CC) $(CFLAGS) $(ARCH_C_TP2) -o $(PATH_TESTING_TP2)
+abb/abb_t/abb.o: abb/abb_t/abb.c
+	@- $(CC) -c $(CFLAGS) $^ -o $@
+
+abb/abb_t/pila.o: abb/abb_t/pila.c
+	@- $(CC) -c $(CFLAGS) $^ -o $@
+
+abb/abb_t/aux.o: abb/abb_t/aux.c
+	@- $(CC) -c $(CFLAGS) $^ -o $@
+
+abb/abb_t/nodo/nodo_abb.o: abb/abb_t/nodo/nodo_abb.c
+	@- $(CC) -c $(CFLAGS) $^ -o $@
+
+abb/testing/pruebas_alumno_abb.o: abb/testing/pruebas_alumno_abb.c
+	@- $(CC) -c $(CFLAGS) $^ -o $@
+
+abb/testing/main_abb.o: abb/testing/main_abb.c
+	@- $(CC) -c $(CFLAGS) $^ -o $@
+
+abb/testing/testing.o: abb/testing/testing.c
+	@- $(CC) -c $(CFLAGS) $^ -o $@
+
+abb/testing/tdas-aux/aux.o: abb/testing/tdas-aux/aux.c
+	@- $(CC) -c $(CFLAGS) $^ -o $@
+
+abb/testing/tdas-aux/hash.o: abb/testing/tdas-aux/hash.c
+	@- $(CC) -c $(CFLAGS) $^ -o $@
+
+hash/hash_t/hash.o: hash/hash_t/hash.c
+	@- $(CC) -c $(CFLAGS) $^ -o $@
+
+hash/hash_t/aux.o: hash/hash_t/aux.c
+	@- $(CC) -c $(CFLAGS) $^ -o $@
+
+hash/testing/hash_pruebas.o: hash/testing/hash_pruebas.c
+	@- $(CC) -c $(CFLAGS) $^ -o $@
+
+hash/testing/main.o: hash/testing/main.c
+	@- $(CC) -c $(CFLAGS) $^ -o $@
+
+hash/testing/testing.o: hash/testing/testing.c
+	@- $(CC) -c $(CFLAGS) $^ -o $@
+
+heap/heap_t/heap.o: heap/heap_t/heap.c
+	@- $(CC) -c $(CFLAGS) $^ -o $@
+
+heap/heap_t/aux.o: heap/heap_t/aux.c
+	@- $(CC) -c $(CFLAGS) $^ -o $@
+
+heap/testing/testing.o: heap/testing/testing.c
+	@- $(CC) -c $(CFLAGS) $^ -o $@
+
+heap/testing/pruebas_alumno_heap.o: heap/testing/pruebas_alumno_heap.c
+	@- $(CC) -c $(CFLAGS) $^ -o $@
+
+heap/testing/main.o: heap/testing/main.c
+	@- $(CC) -c $(CFLAGS) $^ -o $@
+
+heap/testing/tdas-aux/aux.o: heap/testing/tdas-aux/aux.c
+	@- $(CC) -c $(CFLAGS) $^ -o $@
+
+heap/testing/tdas-aux/hash.o: heap/testing/tdas-aux/hash.c
+	@- $(CC) -c $(CFLAGS) $^ -o $@
+
+tp2/zyxcba.o: tp2/zyxcba.c
+	@- $(CC) -c $(CFLAGS) $^ -o $@
+
+tp2/src/strutil.o: tp2/src/strutil.c
+	@- $(CC) -c $(CFLAGS) $^ -o $@
+
+tp2/src/clinica/clinica.o: tp2/src/clinica/clinica.c
+	@- $(CC) -c $(CFLAGS) $^ -o $@
+
+tp2/src/hash/aux.o: tp2/src/hash/aux.c
+	@- $(CC) -c $(CFLAGS) $^ -o $@
+
+tp2/src/hash/hash.o: tp2/src/hash/hash.c
+	@- $(CC) -c $(CFLAGS) $^ -o $@
+
+tp2/src/heap/aux.o: tp2/src/heap/aux.c
+	@- $(CC) -c $(CFLAGS) $^ -o $@
+
+tp2/src/heap/heap.o: tp2/src/heap/heap.c
+	@- $(CC) -c $(CFLAGS) $^ -o $@
+
+tp2/src/sala/sala.o: tp2/src/sala/sala.c
+	@- $(CC) -c $(CFLAGS) $^ -o $@
+
+tp2/src/csv/csv.o: tp2/src/csv/csv.c
+	@- $(CC) -c $(CFLAGS) $^ -o $@
+
+tp2/src/cola/cola.o: tp2/src/cola/cola.c
+	@- $(CC) -c $(CFLAGS) $^ -o $@
+
+tp2/src/lista/lista.o: tp2/src/lista/lista.c
+	@- $(CC) -c $(CFLAGS) $^ -o $@
+
+tp2/src/persona/persona.o: tp2/src/persona/persona.c
+	@- $(CC) -c $(CFLAGS) $^ -o $@
+
+tp2/src/abb/aux.o: tp2/src/abb/aux.c
+	@- $(CC) -c $(CFLAGS) $^ -o $@
+
+tp2/src/abb/abb.o: tp2/src/abb/abb.c
+	@- $(CC) -c $(CFLAGS) $^ -o $@
+
+tp2/src/abb/pila.o: tp2/src/abb/pila.c
+	@- $(CC) -c $(CFLAGS) $^ -o $@
+
+tp2/src/nodo/nodo.o: tp2/src/nodo/nodo.c
+	@- $(CC) -c $(CFLAGS) $^ -o $@
+
+tp2/src/abb/nodo/nodo_abb.o: tp2/src/abb/nodo/nodo_abb.c
+	@- $(CC) -c $(CFLAGS) $^ -o $@
+
+tp2/src/funciones_tp2.o: tp2/src/funciones_tp2.c
+	@- $(CC) -c $(CFLAGS) $^ -o $@
+
+
+# COMPILACION DE EJECUTABLES
+
+abb_t: abb/abb_t/abb.o abb/abb_t/pila.o abb/abb_t/aux.o abb/abb_t/nodo/nodo_abb.o abb/testing/pruebas_alumno_abb.o abb/testing/main_abb.o abb/testing/testing.o abb/testing/tdas-aux/aux.o abb/testing/tdas-aux/hash.o
+	@- $(CC) $(CFLAGS) $^ -o $@
+
+hash_t: hash/hash_t/hash.o hash/hash_t/aux.o hash/testing/hash_pruebas.o hash/testing/main.o hash/testing/testing.o
+	@- $(CC) $(CFLAGS) $^ -o $@
+
+heap_t: heap/heap_t/heap.o heap/heap_t/aux.o heap/testing/testing.o heap/testing/pruebas_alumno_heap.o heap/testing/main.o heap/testing/tdas-aux/aux.o heap/testing/tdas-aux/hash.o
+	@- $(CC) $(CFLAGS) $^ -o $@
+
+zyxcba: tp2/zyxcba.o tp2/src/strutil.o tp2/src/clinica/clinica.o tp2/src/hash/aux.o tp2/src/hash/hash.o tp2/src/heap/aux.o tp2/src/heap/heap.o tp2/src/sala/sala.o tp2/src/csv/csv.o tp2/src/cola/cola.o tp2/src/lista/lista.o tp2/src/persona/persona.o tp2/src/abb/aux.o tp2/src/abb/abb.o tp2/src/abb/pila.o tp2/src/nodo/nodo.o tp2/src/abb/nodo/nodo_abb.o tp2/src/funciones_tp2.o
+	@- $(CC) $(CFLAGS) $^ -o $@
+
+
+# LIMPIAR
 
 clean:
-	@- rm -rf $(REMOVE)
+	@- rm -r $(REMOVE)

@@ -4,18 +4,29 @@ cd ../tp2
 echo ""
 echo "Descomprimiendo pruebas catedra..."
 unzip pruebas.zip > /dev/null
+cd ../testing_scripts
 
-cd ..
+echo ""
+echo "Creando Makefile..."
+cp ../tp2/deps.mk .
+python3 worker.py -f deps.mk
+rm -rf deps.mk
+mv Makefile ../tp2
+
+cd ../tp2
 echo ""
 echo "Compilando tp2..."
-make tp2_t
+make zyxcba
+mv zyxcba pruebas_zyxcba
 
-cd tp2/pruebas_zyxcba
+cd pruebas_zyxcba
 echo ""
 echo "Ejecutando pruebas..."
-./pruebas.sh ./pruebas_tp2
+./pruebas.sh ./zyxcba
 
 cd ..
 echo ""
 echo "Eliminando archivos y carpetas innecesarios..."
 rm -r pruebas_zyxcba
+make clean
+rm -rf Makefile

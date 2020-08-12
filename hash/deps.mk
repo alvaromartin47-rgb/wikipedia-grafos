@@ -1,0 +1,1 @@
+hash: hash_t/hash.o hash_t/aux.o testing/hash_pruebas.o testing/main.o testing/testing.o

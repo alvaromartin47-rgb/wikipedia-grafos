@@ -1,0 +1,4 @@
+abb_t: abb/abb_t/abb.o abb/abb_t/pila.o abb/abb_t/aux.o abb/abb_t/nodo/nodo_abb.o abb/testing/pruebas_alumno_abb.o abb/testing/main_abb.o abb/testing/testing.o abb/testing/tdas-aux/aux.o abb/testing/tdas-aux/hash.o
+hash_t: hash/hash_t/hash.o hash/hash_t/aux.o hash/testing/hash_pruebas.o hash/testing/main.o hash/testing/testing.o
+heap_t: heap/heap_t/heap.o heap/heap_t/aux.o heap/testing/testing.o heap/testing/pruebas_alumno_heap.o heap/testing/main.o heap/testing/tdas-aux/aux.o heap/testing/tdas-aux/hash.o
+zyxcba: tp2/zyxcba.o tp2/src/strutil.o tp2/src/clinica/clinica.o tp2/src/hash/aux.o tp2/src/hash/hash.o tp2/src/heap/aux.o tp2/src/heap/heap.o tp2/src/sala/sala.o tp2/src/csv/csv.o tp2/src/cola/cola.o tp2/src/lista/lista.o tp2/src/persona/persona.o tp2/src/abb/aux.o tp2/src/abb/abb.o tp2/src/abb/pila.o tp2/src/nodo/nodo.o tp2/src/abb/nodo/nodo_abb.o tp2/src/funciones_tp2.o
