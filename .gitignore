@@ -3,4 +3,11 @@ heap/pruebas
 heap/heap_modif
 tp2/src/doctores.csv
 tp2/src/pacientes.csv
-tp2/src/hola.txt
+tp3/grafos
+tp3/src/grafo/__pycache__
+tp3/src/__pycache__
+tp3/lib/__pycache__
+tp3/src/mod/__pycache__
+tp3/src/tests
+tp3/src/lib/__pycache__
+.gitignore

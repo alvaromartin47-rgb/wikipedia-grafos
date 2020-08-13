@@ -1,0 +1,5 @@
+ERR_ARGV = "ERROR: el número de argumentos es inválido"
+ERR_FORMATO = "ERROR: formato de comando incorrecto"
+ERR_PARAMS = "ERROR: cantidad de parámetros inválida para comando '{}'"
+ERR_CMD = "ERROR: no existe el comando '{}'"
+ERR_CAMINO = "No se encontro recorrido"
