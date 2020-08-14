@@ -1,4 +1,5 @@
-from lib.operaciones import dijkstra_sin_peso, imprimir_camino, cfc
+import os
+from lib.operaciones import camino_minimo_bfs, imprimir_camino, cfc, orden_topologico_bfs
 from mod.mensajes import *
 
 # Esta será una variable global donde se almacenaran las componentes fuertemente conexas
@@ -20,25 +21,25 @@ def listar_comandos(funcionalidades):
         print(comando)
 
 def camino(grafo, origen, destino):
-    padres, dist = dijkstra_sin_peso(grafo, origen, destino)
+    padres, dist = camino_minimo_bfs(grafo, origen, destino)
     if not padres and not dist: print(ERR_CAMINO)
     else: imprimir_camino(padres, destino)
 
 def conectados(grafo, vertice):
     global CFC
-
     if not CFC: CFC = cfc(grafo)
-    
-    cant = 0
-    componente = CFC.get(vertice)
-    if not componente: print("No se encontro conectividad para esta página")
-    else:
-        # Hecho asi para contabilizar los articulos
-        for pagina in componente:
-            print(pagina)
-            cant += 1    
 
-        print(cant)
+    componente = CFC.get(vertice)
+    
+    if not componente:
+        print("No se encontro conectividad para esta página")
+        return
+
+    print(componente[0], end="")
+    for i in range(1, len(componente)): print(f", {componente[i]}", end="")
+    print()
+
+    print(len(componente))
 
 def ciclo():
     pass
@@ -48,3 +49,6 @@ def lectura():
 
 def mas_importantes():
     pass
+
+def clear():
+    os.system("clear")

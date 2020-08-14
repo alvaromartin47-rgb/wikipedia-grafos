@@ -41,6 +41,7 @@ def procesar_comandos(comando, parametros, red_internet):
     elif comando == "ciclo": ciclo()
     elif comando == "lectura": lectura()
     elif comando == "mas_importantes": mas_importantes()
+    elif comando == "clear": clear()
     # Poner elif por cada comando
 
 

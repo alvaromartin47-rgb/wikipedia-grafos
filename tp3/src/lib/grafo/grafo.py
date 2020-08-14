@@ -70,7 +70,7 @@ class Grafo():
         grafo. De lo contrario, false.
         '''
         if not v: return False
-        return self.relaciones.get(v) == v
+        return v in self.relaciones
 
     def obtener_vertices(self):
         return list(self.relaciones.keys())

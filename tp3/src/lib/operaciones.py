@@ -41,12 +41,14 @@ def cargar_contenido(ruta_archivo):
     with open(ruta_archivo) as archivo:
         for linea in archivo:
             linea = linea.rstrip("\n").split(SEPARADOR)
+            
             pagina = linea[0]
-            if pagina == "": continue
 
-            for i in range(len(linea)):
-                if not red_internet.pertenece(pagina): red_internet.agregar_vertice(linea[i])
-                if i > 0: red_internet.relacionar_dirigido(pagina, linea[i])
+            if not red_internet.pertenece(pagina): red_internet.agregar_vertice(pagina)
+            
+            for i in range(1, len(linea)):
+                if not red_internet.pertenece(linea[i]): red_internet.agregar_vertice(linea[i])
+                red_internet.relacionar_dirigido(pagina, linea[i])
     
     return red_internet
 
@@ -67,7 +69,7 @@ def imprimir_camino(padres, destino):
     print()
 
 
-def dijkstra_sin_peso(grafo, origen, destino):
+def camino_minimo_bfs(grafo, origen, destino):
     padres = dict()
     cola = Cola()
     dist = defaultdict(lambda : math.inf)
@@ -93,7 +95,7 @@ def dijkstra_sin_peso(grafo, origen, destino):
 
 def agregar_componente(componentes, v, pila):
     componente = list()
-    
+
     while not pila.esta_vacia():
         vertice = pila.desapilar()
         componente.append(vertice)
@@ -106,28 +108,16 @@ def agregar_componente(componentes, v, pila):
 def _cfc(grafo, v, visitados, mb, orden, pila, componentes):
     visitados.add(v)
     pila.apilar(v)
-    # print(f"Laburando con {v} (orden: {orden[v]})")
     mb[v] = orden[v]
-  
+    
     for w in grafo.adyacentes(v):
         if w not in visitados:
-            # print(f'{w} no esta visitado, lo visito')
             orden[w] = orden[v] + 1
             _cfc(grafo, w, visitados, mb, orden, pila, componentes)
-            
-        if pila.pertenece(w):
-            # if mb[v] > mb[w]: # solo para el print
-                # print(f"wiii, {v} bajo su mb gracias a la conexion que tiene con {w}")
-            mb[v] = min(mb[v], mb[w])
+        
+        if pila.pertenece(w): mb[v] = min(mb[v], mb[w])
 
-        if mb[v] == orden[v] and not pila.esta_vacia(): 
-            # print(f"El mas bajo de {v} es igual a su orden! mb: {mb[v]}, orden: {orden[v]}")
-            agregar_componente(componentes, v, pila)
-            # print(f"Componentes: {componentes}")
-
-
-    # print(f"Termino de laburar con {v} (mb: {mb[v]})")
-
+    if mb[v] == orden[v] and not pila.esta_vacia(): agregar_componente(componentes, v, pila)
 
 def cfc(grafo):
     visitados = set()
@@ -142,3 +132,34 @@ def cfc(grafo):
             _cfc(grafo, v, visitados, mb, orden, pila, componentes)
 
     return componentes
+
+
+def calcular_grados_entrada(grafo):
+    grados_entrada = dict()
+    for v in grafo: grados_entrada[v] = 0
+    
+    for v in grafo:
+        for w in grafo.adyacentes(v):
+            grados_entrada[w] += 1
+    
+    return grados_entrada
+
+def orden_topologico_bfs(grafo):
+    c = Cola()
+    orden_topologico = list()
+
+    grados_entrada = calcular_grados_entrada(grafo)
+
+    for v in grafo:
+        if grados_entrada[v] == 0: c.encolar(v)
+
+    while not c.esta_vacia():
+        v = c.desencolar()
+        orden_topologico.append(v)
+        
+        for w in grafo.adyacentes(v):
+            grados_entrada[w] -= 1
+            
+            if grados_entrada[w] == 0: c.encolar(w)
+    
+    return orden_topologico
