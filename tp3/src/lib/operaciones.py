@@ -37,27 +37,17 @@ def cargar_contenido(ruta_archivo):
     dirigido donde cada vertice es una página y cada arista es
     el enlace de una pagina a otra.
     '''
-    paginas = dict()
     red_internet = Grafo()
     with open(ruta_archivo) as archivo:
         for linea in archivo:
             linea = linea.rstrip("\n").split(SEPARADOR)
-            
             pagina = linea[0]
             if pagina == "": continue
+
+            for i in range(len(linea)):
+                if not red_internet.pertenece(pagina): red_internet.agregar_vertice(linea[i])
+                if i > 0: red_internet.relacionar_dirigido(pagina, linea[i])
     
-            red_internet.agregar_vertice(pagina)
-            paginas[pagina] = list()
-
-            for i in range(1, len(linea)):
-                link = linea[i]
-                paginas[pagina].append(link) 
-
-        for pagina in paginas:
-            for link in paginas[pagina]:
-                if not paginas.get(link): continue
-                red_internet.relacionar_dirigido(pagina, link)
-
     return red_internet
 
 
