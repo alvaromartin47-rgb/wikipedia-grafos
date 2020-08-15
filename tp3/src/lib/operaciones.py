@@ -1,3 +1,4 @@
+import time
 import sys
 import math
 from lib.grafo.grafo import Grafo
@@ -44,13 +45,31 @@ def cargar_contenido(ruta_archivo):
             
             pagina = linea[0]
 
-            if not red_internet.pertenece(pagina): red_internet.agregar_vertice(pagina)
+            if not red_internet.pertenecen(pagina): red_internet.agregar_vertice(pagina)
             
             for i in range(1, len(linea)):
-                if not red_internet.pertenece(linea[i]): red_internet.agregar_vertice(linea[i])
-                red_internet.relacionar_dirigido(pagina, linea[i])
-    
+                if not red_internet.pertenecen(linea[i]): red_internet.agregar_vertice(linea[i])
+                red_internet.agregar_arista_dirigido(pagina, linea[i])
+
     return red_internet
+
+
+def imprimir_ciclo(padres, destino):
+    solucion = list()
+
+    while True:
+        solucion.insert(0, destino)
+        
+        if padres[destino] == solucion[len(solucion) - 1]:
+            solucion.insert(0, padres[destino])
+            break
+        
+        destino = padres[destino]
+
+    print(solucion[0], end="")
+    for i in range(1, len(solucion)):
+        print(f" -> {solucion[i]}", end="")
+    print()
 
 
 def imprimir_camino(padres, destino):
@@ -82,7 +101,7 @@ def camino_minimo_bfs(grafo, origen, destino):
         v, d = cola.desencolar()
         if v == destino: return padres, dist
 
-        for w in grafo.adyacentes(v):
+        for w in grafo.obtener_adyacentes(v):
             (v, w), peso = grafo.obtener_arista(v, w)
 
             if dist[v] + peso < dist[w]:
@@ -104,13 +123,12 @@ def agregar_componente(componentes, v, pila):
     for vertice in componente:
         componentes[vertice] = componente
 
-
 def _cfc(grafo, v, visitados, mb, orden, pila, componentes):
     visitados.add(v)
     pila.apilar(v)
     mb[v] = orden[v]
     
-    for w in grafo.adyacentes(v):
+    for w in grafo.obtener_adyacentes(v):
         if w not in visitados:
             orden[w] = orden[v] + 1
             _cfc(grafo, w, visitados, mb, orden, pila, componentes)
@@ -121,10 +139,10 @@ def _cfc(grafo, v, visitados, mb, orden, pila, componentes):
 
 def cfc(grafo):
     visitados = set()
-    mb = {}
-    orden = {}
+    mb = dict()
+    orden = dict()
     pila = Pila()
-    componentes = {}
+    componentes = dict()
 
     for v in grafo:
         if v not in visitados:
@@ -139,7 +157,7 @@ def calcular_grados_entrada(grafo):
     for v in grafo: grados_entrada[v] = 0
     
     for v in grafo:
-        for w in grafo.adyacentes(v):
+        for w in grafo.obtener_adyacentes(v):
             grados_entrada[w] += 1
     
     return grados_entrada
@@ -157,9 +175,38 @@ def orden_topologico_bfs(grafo):
         v = c.desencolar()
         orden_topologico.append(v)
         
-        for w in grafo.adyacentes(v):
+        for w in grafo.obtener_adyacentes(v):
             grados_entrada[w] -= 1
             
             if grados_entrada[w] == 0: c.encolar(w)
     
     return orden_topologico
+    
+
+def _backtracking(grafo, origen, n, v_act, n_act, padres, visitados):
+    if n_act == n and n_act > 0: return v_act == origen
+    if v_act == origen and n_act > 0: return False
+    
+    for w in grafo.obtener_adyacentes(v_act):
+        if (w in visitados and w != origen) or w == padres[v_act]: continue
+    
+        padres[w] = v_act
+        visitados.add(w)
+
+        hay_solucion = _backtracking(grafo, origen, n, w, n_act + 1, padres, visitados)
+        
+        ultimo = visitados.remove(w)
+
+        if hay_solucion: return True
+
+    return False
+
+def backtracking(grafo, origen, n):
+    visitados = set()
+    padres = dict()
+    n_act = 0
+    
+    padres[origen] = None
+    visitados.add(origen)
+
+    return _backtracking(grafo, origen, n, origen, n_act, padres, visitados), padres

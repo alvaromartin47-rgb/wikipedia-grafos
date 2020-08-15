@@ -7,7 +7,6 @@ class Pila:
 		Crea una pila vacia.
 		'''
 		self.items = []
-		self.items_2 = set()
 
 	def __str__(self):
 		return str(self.items)
@@ -23,7 +22,6 @@ class Pila:
 		Apila un elemento 'x'.
 		'''
 		self.items.append(x)
-		self.items_2.add(x)
 
 	def desapilar(self):
 		'''
@@ -33,12 +31,10 @@ class Pila:
 		if self.esta_vacia():
 			raise IndexError('La pila está vacía.')
 
-		borrado = self.items.pop()
-		self.items_2.remove(borrado)
-		return borrado
+		return self.items.pop()
 
 	def pertenece(self, elemento):
-		return elemento in self.items_2
+		return elemento in self.items
 
 	def ver_tope(self):
 		'''

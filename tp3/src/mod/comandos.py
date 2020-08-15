@@ -1,5 +1,5 @@
 import os
-from lib.operaciones import camino_minimo_bfs, imprimir_camino, cfc, orden_topologico_bfs
+from lib.operaciones import camino_minimo_bfs, imprimir_camino, cfc, orden_topologico_bfs, backtracking, imprimir_ciclo
 from mod.mensajes import *
 
 # Esta será una variable global donde se almacenaran las componentes fuertemente conexas
@@ -32,7 +32,7 @@ def conectados(grafo, vertice):
     componente = CFC.get(vertice)
     
     if not componente:
-        print("No se encontro conectividad para esta página")
+        print(ERR_CONEC)
         return
 
     print(componente[0], end="")
@@ -41,9 +41,15 @@ def conectados(grafo, vertice):
 
     print(len(componente))
 
-def ciclo():
-    pass
-
+def ciclo(grafo, origen, n):
+    if not grafo.pertenecen(origen): print(ERR_CICLO)
+    
+    hay_ciclo, ciclo = backtracking(grafo, origen, int(n))
+    
+    if hay_ciclo: imprimir_ciclo(ciclo, origen)
+    
+    else: print(ERR_CICLO)
+    
 def lectura():
     pass
 

@@ -38,7 +38,7 @@ def procesar_comandos(comando, parametros, red_internet):
     elif comando == "listar_comandos": listar_comandos(FUNCIONALIDADES)
     elif comando == "camino": camino(red_internet, parametros[0], parametros[1])
     elif comando == "conectados": conectados(red_internet, parametros[0])
-    elif comando == "ciclo": ciclo()
+    elif comando == "ciclo": ciclo(red_internet, parametros[0], parametros[1])
     elif comando == "lectura": lectura()
     elif comando == "mas_importantes": mas_importantes()
     elif comando == "clear": clear()
