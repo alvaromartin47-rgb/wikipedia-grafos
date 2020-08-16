@@ -43,6 +43,7 @@ def cargar_contenido(ruta_archivo):
         for linea in archivo:
             linea = linea.rstrip("\n").split(SEPARADOR)
             
+            if linea[0] == "": continue
             pagina = linea[0]
 
             if not red_internet.pertenecen(pagina): red_internet.agregar_vertice(pagina)
@@ -152,35 +153,35 @@ def cfc(grafo):
     return componentes
 
 
-def calcular_grados_entrada(grafo):
-    grados_entrada = dict()
-    for v in grafo: grados_entrada[v] = 0
+# def calcular_grados_entrada(grafo):
+#     grados_entrada = dict()
+#     for v in grafo: grados_entrada[v] = 0
     
-    for v in grafo:
-        for w in grafo.obtener_adyacentes(v):
-            grados_entrada[w] += 1
+#     for v in grafo:
+#         for w in grafo.obtener_adyacentes(v):
+#             grados_entrada[w] += 1
     
-    return grados_entrada
+#     return grados_entrada
 
-def orden_topologico_bfs(grafo):
-    c = Cola()
-    orden_topologico = list()
+# def orden_topologico_bfs(grafo):
+#     c = Cola()
+#     orden_topologico = list()
 
-    grados_entrada = calcular_grados_entrada(grafo)
+#     grados_entrada = calcular_grados_entrada(grafo)
 
-    for v in grafo:
-        if grados_entrada[v] == 0: c.encolar(v)
+#     for v in grafo:
+#         if grados_entrada[v] == 0: c.encolar(v)
 
-    while not c.esta_vacia():
-        v = c.desencolar()
-        orden_topologico.append(v)
+#     while not c.esta_vacia():
+#         v = c.desencolar()
+#         orden_topologico.append(v)
         
-        for w in grafo.obtener_adyacentes(v):
-            grados_entrada[w] -= 1
+#         for w in grafo.obtener_adyacentes(v):
+#             grados_entrada[w] -= 1
             
-            if grados_entrada[w] == 0: c.encolar(w)
+#             if grados_entrada[w] == 0: c.encolar(w)
     
-    return orden_topologico
+#     return orden_topologico
     
 
 def _backtracking(grafo, origen, n, v_act, n_act, padres, visitados):

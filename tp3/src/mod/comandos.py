@@ -1,5 +1,5 @@
 import os
-from lib.operaciones import camino_minimo_bfs, imprimir_camino, cfc, orden_topologico_bfs, backtracking, imprimir_ciclo
+from lib.operaciones import camino_minimo_bfs, imprimir_camino, cfc, backtracking, imprimir_ciclo
 from mod.mensajes import *
 
 # Esta será una variable global donde se almacenaran las componentes fuertemente conexas
