@@ -31,18 +31,21 @@ def procesar_comandos(comando, parametros, red_internet):
         print(ERR_CMD.format(comando))
         return
     
-    cant_parametros = FUNCIONALIDADES.get(comando)
-    if str(len(parametros)) != cant_parametros and cant_parametros != "n":
-         print(ERR_PARAMS.format(comando))
+    n_params = FUNCIONALIDADES.get(comando)
+    if n_params != "n" and len(parametros) not in range(n_params[0], n_params[1]):
+        print(ERR_PARAMS.format(comando))
 
-    elif comando == "listar_comandos": listar_comandos(FUNCIONALIDADES)
+    if comando == "listar_comandos": listar_comandos(FUNCIONALIDADES)
     elif comando == "camino": camino(red_internet, parametros[0], parametros[1])
     elif comando == "conectados": conectados(red_internet, parametros[0])
-    elif comando == "ciclo": ciclo(red_internet, parametros[0], parametros[1])
+    elif comando == "ciclo": ciclo()
     elif comando == "lectura": lectura()
     elif comando == "mas_importantes": mas_importantes()
+    elif comando == "diametro": diametro(red_internet)
+    elif comando == "rango": todos_en_rango(red_internet, parametros[0], int(parametros[1]))
+    elif comando == "navegacion": navegacion(red_internet, parametros[0])
+    elif comando == "clustering": coeficiente_de_clustering(red_internet, parametros, len(parametros))
     elif comando == "clear": clear()
-    # Poner elif por cada comando
 
 
 def procesar_entrada(red_internet):

@@ -28,7 +28,15 @@ def obtener_comandos(ruta_archivo):
     with open(ruta_archivo) as archivo:
         for linea in archivo:
             linea = linea.rstrip("\n").split(",")
-            funcionalidades[linea[0]] = linea[1]
+            
+            if len(linea[1]) == 3 and linea[1][1] == ":":
+                if linea[1][0].isdigit() and linea[1][2].isdigit():
+                    funcionalidades[linea[0]] = (int(linea[1][0]), int(linea[1][2]) + 1)
+            
+            elif linea[1].isdigit():
+                funcionalidades[linea[0]] = (int(linea[1][0]), int(linea[1][0]) + 1)
+            
+            else: funcionalidades[linea[0]] = linea[1]
     
     return funcionalidades
 
@@ -55,41 +63,8 @@ def cargar_contenido(ruta_archivo):
     return red_internet
 
 
-def imprimir_ciclo(padres, destino):
-    solucion = list()
 
-    while True:
-        solucion.insert(0, destino)
-        
-        if padres[destino] == solucion[len(solucion) - 1]:
-            solucion.insert(0, padres[destino])
-            break
-        
-        destino = padres[destino]
-
-    print(solucion[0], end="")
-    for i in range(1, len(solucion)):
-        print(f" -> {solucion[i]}", end="")
-    print()
-
-
-def imprimir_camino(padres, destino):
-    solucion = list()
-
-    while True:
-        solucion.insert(0, destino)
-        if not padres[destino]: break
-        destino = padres[destino]
-
-    if solucion != []: print(solucion[0], end="")
-    
-    for i in range(1, len(solucion)):
-        print(f" -> {solucion[i]}", end="")
-    
-    print()
-
-
-def camino_minimo_bfs(grafo, origen, destino):
+def camino_minimo_bfs(grafo, origen, destino=None):
     padres = dict()
     cola = Cola()
     dist = defaultdict(lambda : math.inf)
@@ -110,8 +85,8 @@ def camino_minimo_bfs(grafo, origen, destino):
                 padres[w] = v
                 cola.encolar((w, dist[w]))
     
+    if not destino: return padres, dist
     return None, None
-
 
 def agregar_componente(componentes, v, pila):
     componente = list()
@@ -211,3 +186,83 @@ def backtracking(grafo, origen, n):
     visitados.add(origen)
 
     return _backtracking(grafo, origen, n, origen, n_act, padres, visitados), padres
+
+def obtener_diametro(grafo):
+    """Devuelve el diametro del grafo, el vértice que se encuentra a esa distancia y un dic para poder reconstruir el camino. Recibe como parametro el grafo.
+    Pre: el grafo fue creado.
+    """
+    max_dist_min = 0
+    destino = None
+    camino = None
+
+    for v in grafo:
+        padres, distancia = camino_minimo_bfs(grafo, v)
+        for w in distancia:
+            if distancia[w] > max_dist_min:
+                max_dist_min = distancia[w]
+                destino = w
+                camino = padres
+
+    return max_dist_min, destino, camino
+
+def rango_n(grafo, vertice, n):
+    """Devuelve la cantidad de vértices que se encuentra a distancia n de un vértice. Recibe como parámetro el grafo,
+    un vértice y un número n.
+    Pre: el grafo fue creado y el vértice se encuentra en él.
+    """
+    padres, distancia = camino_minimo_bfs(grafo, vertice)
+    contador = 0
+
+    for w in distancia:
+        if distancia[w] == n:
+            contador += 1
+
+    return contador
+
+def _camino_dfs(grafo, v, contador, camino):
+    if contador >= 20: return
+    camino.append(v)
+    adyacentes = grafo.obtener_adyacentes(v)
+    if len(adyacentes) == 0: return
+    _camino_dfs(grafo, adyacentes[0], contador + 1, camino)
+
+def camino_dfs(grafo, origen):
+    """Devuelve un camino desde un vértice hasta otro, sólo accediendo a la primer arista de los vértices. El camino termina
+    cuando el último vértice no tiene adyacentes o cuando se recorriendo 20 vértices. Recibe como parámetro el grafo y un origen.
+    Pre: el grafo fue creado y el origen pertenece a él.
+    """
+    contador = 0
+    camino = []
+    _camino_dfs(grafo, origen, contador, camino)
+    return camino
+
+def obtener_promedio_clustering(grafo):
+    """Devuelve el promedio de los coeficientes Clustering de todos los vértices del grafo.
+    Pre: el grafo fue creado.
+    """
+    sumatoria = 0
+    n = len(grafo)
+
+    for v in grafo:
+        sumatoria += obtener_coef_clustering(grafo, v)
+
+    return round(sumatoria / n, 3)
+
+def obtener_coef_clustering(grafo, vertice):
+    """Devuelve el coeficiente Clustering de un vértice. Recibe como parámetros el grafo y el vértice en cuestión.
+    Pre: el grafo fue creado y el vértice pertenece a él.
+    """
+    cant = 0
+    adyacentes = grafo.obtener_adyacentes(vertice)
+    grado_salida = len(adyacentes)
+    
+    if grado_salida < 2: return 0
+    
+    for v in adyacentes:
+        for w in adyacentes:
+            if v == w: continue
+            if w in grafo.obtener_adyacentes(v): cant += 1
+    
+    denominador = grado_salida * (grado_salida - 1)
+    coef = cant / denominador
+    return round(coef, 3)
