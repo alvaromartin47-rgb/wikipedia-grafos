@@ -1,8 +1,7 @@
-import time
 import sys
 import math
-from lib.grafo.grafo import Grafo
 from collections import defaultdict
+from lib.grafo.grafo import Grafo
 from lib.cola.cola import Cola
 from lib.pila.pila import Pila
 
@@ -16,13 +15,13 @@ sys.setrecursionlimit(50000)
 ######################################################################################### 
 
 def obtener_comandos(ruta_archivo):
-    '''Lee el contenido de _ruta_archivo_ en formato .csv
+    """Lee el contenido de _ruta_archivo_ en formato .csv
     y devuelve un diccionario con el contenido de las primeras
     dos columnas del archivo. Como clave tendrá la primer columna de
     cada linea y como valor la segunda.
     Pre: el archivo tiene extensión .csv, existe y tiene al menos dos
     columnas.
-    '''
+    """
     funcionalidades = dict()
     
     with open(ruta_archivo) as archivo:
@@ -42,10 +41,10 @@ def obtener_comandos(ruta_archivo):
 
 
 def cargar_contenido(ruta_archivo):
-    '''Lee el contenido de _ruta_archivo_ y devuelve un grafo
+    """Lee el contenido de _ruta_archivo_ y devuelve un grafo
     dirigido donde cada vertice es una página y cada arista es
-    el enlace de una pagina a otra.
-    '''
+    el enlace de una v a otra.
+    """
     red_internet = Grafo()
     with open(ruta_archivo) as archivo:
         for linea in archivo:
@@ -64,6 +63,13 @@ def cargar_contenido(ruta_archivo):
 
 
 def camino_minimo_bfs(grafo, origen, destino=None):
+    """Recibe un grafo, origen, y destino (opcional)
+    Calcula el camino mínimo desde _origen_ hasta destino, en caso de no hacer uso
+    del parámetro destino, calcula todos los caminos minimos desde cada vertice a _origen_.
+    Si _destino_ no existe dentro del grafo devuelve una tupla con None, en caso de existir
+    camino/s minimo/s devuelve una tupla de padres y distancias.
+    Pre: el grafo fue creado y origen pertenece al grafo.
+    """ 
     padres = dict()
     cola = Cola()
     dist = defaultdict(lambda : math.inf)
@@ -114,6 +120,10 @@ def _cfc(grafo, v, visitados, mb, orden, pila, componentes):
     if mb[v] == orden[v] and not pila.esta_vacia(): agregar_componente(componentes, v, pila)
 
 def cfc(grafo):
+    """Recibe un grafo y le calcula las componentes fuertemente conexas devolviendo una lista
+    con cada una de las componentes.
+    Pre: el grafo fue creado.
+    """
     visitados = set()
     mb = dict()
     orden = dict()
@@ -128,48 +138,44 @@ def cfc(grafo):
     return componentes
 
 
-def buscar_orden(grafo, p, paginas, n, padres, visitados):
-    print(f"Laburando con {p}")
-    print(f"n es {n} y la cantidad de paginas es {len(paginas)}")
-    if n == len(paginas):
-        print("Hay coincidencia! devuelvo True")
-        return True, p
+def buscar_orden(grafo, v_act, vertices, n, padres, visitados):
+    if n == len(vertices): return True, v_act
     
-    for pagina in paginas:
-        print(f"Laburando con la siguiente pagina, {pagina}")
-        if not grafo.estan_conectados(p, pagina) or pagina in visitados: 
-            print(f"Continuo con la siguiente pagina")    
-            continue
+    for v in vertices:
+        if not grafo.estan_conectados(v_act, v) or v in visitados: continue
 
-        visitados.add(pagina)
-        padres[pagina] = p
-        print(f"{pagina} se encuentra en los adyacentes de {p} y aun no esta visitado, llamo recursivamente")
+        visitados.add(v)
+        padres[v] = v_act
+
+        hay_solucion, primera =  buscar_orden(grafo, v, vertices, n + 1, padres, visitados)
         
-        hay_solucion, primera =  buscar_orden(grafo, pagina, paginas, n + 1, padres, visitados)
-        print(f"Volvi en recursividad, saco de visitados a {pagina}. N es {n}")
-        visitados.remove(pagina)
+        visitados.remove(v)
         
-        if hay_solucion: 
-            print("Hay coincidencia! devuelvo True")
-            return True, primera
-            
-        print(f"No hubo coincidencias, continuo con la siguiente pagina")
-    
+        if hay_solucion: return True, primera
+
     return False, None
 
-def orden_valido(grafo, paginas):
+def orden_valido(grafo, vertices):
+    """Recibe un grafo y un conjunto de vertices.
+    Busca un orden valido para recorrer los vertices de modo que si B es adyacente
+    de A, primero debe aparecer B. Devuelve una tupla con el diccionario de padres y
+    el orden correspondiente y un vertice que será el inicio. De lo contrario una tupla
+    con None.
+    Pre: el grafo fue creado.
+    """
     padres = dict()
     visitados = set()
 
-    for pagina in paginas:
-        padres[pagina] = None
-        visitados.add(pagina)
-        hay_orden, primera = buscar_orden(grafo, pagina, paginas, 1, padres, visitados)
+    for v in vertices:
+        padres[v] = None
+        visitados.add(v)
+        hay_orden, primera = buscar_orden(grafo, v, vertices, 1, padres, visitados)
         if hay_orden: return padres, primera
     
     return None, None
 
-def _backtracking(grafo, origen, n, v_act, n_act, padres, visitados):
+
+def backtracking(grafo, origen, n, v_act, n_act, padres, visitados):
     if n_act == n and n_act > 0: return v_act == origen
     if v_act == origen and n_act > 0: return False
     
@@ -179,7 +185,7 @@ def _backtracking(grafo, origen, n, v_act, n_act, padres, visitados):
         padres[w] = v_act
         visitados.add(w)
 
-        hay_solucion = _backtracking(grafo, origen, n, w, n_act + 1, padres, visitados)
+        hay_solucion = backtracking(grafo, origen, n, w, n_act + 1, padres, visitados)
         
         ultimo = visitados.remove(w)
 
@@ -187,7 +193,12 @@ def _backtracking(grafo, origen, n, v_act, n_act, padres, visitados):
 
     return False
 
-def backtracking(grafo, origen, n):
+def obtener_ciclo_n(grafo, origen, n):
+    """Recibe un grafo y busca un ciclo de largo _n_ dentro de la red utilizando backtracking,
+    si encuentra uno devuelve True y un diccionario de padres con el ciclo. De lo contrario, 
+    False y un diccionario vacio.
+    Pre: el grafo fue creado.
+    """
     visitados = set()
     padres = dict()
     n_act = 0
@@ -195,10 +206,12 @@ def backtracking(grafo, origen, n):
     padres[origen] = None
     visitados.add(origen)
 
-    return _backtracking(grafo, origen, n, origen, n_act, padres, visitados), padres
+    return backtracking(grafo, origen, n, origen, n_act, padres, visitados), padres
+
 
 def obtener_diametro(grafo):
-    """Devuelve el diametro del grafo, el vértice que se encuentra a esa distancia y un dic para poder reconstruir el camino. Recibe como parametro el grafo.
+    """Devuelve el diametro del grafo, el vértice que se encuentra a esa distancia y un diccionario
+    para poder reconstruir el camino. Recibe como parametro el grafo.
     Pre: el grafo fue creado.
     """
     max_dist_min = 0
@@ -216,8 +229,8 @@ def obtener_diametro(grafo):
     return max_dist_min, destino, camino
 
 def rango_n(grafo, vertice, n):
-    """Devuelve la cantidad de vértices que se encuentra a distancia n de un vértice. Recibe como parámetro el grafo,
-    un vértice y un número n.
+    """Devuelve la cantidad de vértices que se encuentra a distancia n de un vértice. Recibe como
+    parámetro el grafo, un vértice y un número n.
     Pre: el grafo fue creado y el vértice se encuentra en él.
     """
     padres, distancia = camino_minimo_bfs(grafo, vertice)
@@ -237,8 +250,9 @@ def _camino_dfs(grafo, v, contador, camino):
     _camino_dfs(grafo, adyacentes[0], contador + 1, camino)
 
 def camino_dfs(grafo, origen):
-    """Devuelve un camino desde un vértice hasta otro, sólo accediendo a la primer arista de los vértices. El camino termina
-    cuando el último vértice no tiene adyacentes o cuando se recorriendo 20 vértices. Recibe como parámetro el grafo y un origen.
+    """Devuelve un camino desde un vértice hasta otro, sólo accediendo a la primer arista de los vértices.
+    El camino termina cuando el último vértice no tiene adyacentes o cuando se recorriendo 20 vértices.
+    Recibe como parámetro el grafo y un origen.
     Pre: el grafo fue creado y el origen pertenece a él.
     """
     contador = 0
@@ -259,7 +273,8 @@ def obtener_promedio_clustering(grafo):
     return round(sumatoria / n, 3)
 
 def obtener_coef_clustering(grafo, vertice):
-    """Devuelve el coeficiente Clustering de un vértice. Recibe como parámetros el grafo y el vértice en cuestión.
+    """Devuelve el coeficiente Clustering de un vértice. Recibe como parámetros el grafo y el 
+    vértice en cuestión.
     Pre: el grafo fue creado y el vértice pertenece a él.
     """
     cant = 0
