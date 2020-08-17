@@ -1,5 +1,5 @@
 import os
-from lib.operaciones import camino_minimo_bfs, imprimir_camino, cfc, backtracking, imprimir_ciclo, rango_n, camino_dfs, obtener_promedio_clustering, obtener_coef_clustering
+from lib.operaciones import camino_minimo_bfs, cfc, backtracking, rango_n, camino_dfs, obtener_promedio_clustering, obtener_coef_clustering, orden_valido
 from mod.mensajes import *
 
 # Esta será una variable global donde se almacenaran las componentes fuertemente conexas
@@ -13,6 +13,11 @@ CFC = None
                                 # FUNCIONES IMPRIMIR                                    #
                                                                                         #
 ######################################################################################### 
+
+def imprimir_orden(orden):
+    print(orden[0], end="")
+    for i in range(1, len(orden)): print(f", {orden[i]}", end="")
+    print()
 
 def imprimir_componente(componente):
     print(componente[0], end="")
@@ -91,11 +96,13 @@ def ciclo(grafo, origen, n):
     hay_ciclo, ciclo = backtracking(grafo, origen, int(n))
     
     if hay_ciclo: imprimir_ciclo(ciclo, origen)
-    
     else: print(ERR_CICLO)
     
-def lectura():
-    pass
+def lectura(grafo, paginas):
+    orden = orden_valido(grafo, paginas)
+    print(orden)
+    # if not orden: print(ERR_LECTURA)
+    # imprimir_orden(orden)
 
 def mas_importantes():
     pass

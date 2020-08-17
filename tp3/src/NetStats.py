@@ -39,7 +39,7 @@ def procesar_comandos(comando, parametros, red_internet):
     elif comando == "camino": camino(red_internet, parametros[0], parametros[1])
     elif comando == "conectados": conectados(red_internet, parametros[0])
     elif comando == "ciclo": ciclo()
-    elif comando == "lectura": lectura()
+    elif comando == "lectura": lectura(red_internet, parametros)
     elif comando == "mas_importantes": mas_importantes()
     elif comando == "diametro": diametro(red_internet)
     elif comando == "rango": todos_en_rango(red_internet, parametros[0], int(parametros[1]))

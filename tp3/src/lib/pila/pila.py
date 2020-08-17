@@ -8,9 +8,13 @@ class Pila:
 		'''
 		self.items = []
 		self.aux = set()
+		self.cantidad = 0
 
 	def __str__(self):
 		return str(self.items)
+
+	def __len__(self):
+		return self.cantidad
 
 	def esta_vacia(self):
 		'''
@@ -24,6 +28,7 @@ class Pila:
 		'''
 		self.items.append(x)
 		self.aux.add(x)
+		self.cantidad += 1
 
 	def desapilar(self):
 		'''
@@ -35,7 +40,8 @@ class Pila:
 
 		borrado = self.items.pop()
 		self.aux.remove(borrado)
-
+		self.cantidad -= 1
+		
 		return borrado
 
 	def pertenece(self, elemento):

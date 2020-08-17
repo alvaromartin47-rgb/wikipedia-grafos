@@ -128,36 +128,44 @@ def cfc(grafo):
     return componentes
 
 
-# def calcular_grados_entrada(grafo):
-#     grados_entrada = dict()
-#     for v in grafo: grados_entrada[v] = 0
+def buscar_orden(grafo, p, paginas, n, padres, visitados):
+    # time.sleep(1)
+    print(f"Laburando con {p}")
+    print(f"n es {n} y la cantidad de paginas es {len(paginas)}")
+    if n == len(paginas): 
+        print("Hay coincidencia! devuelvo True")
+        return True
     
-#     for v in grafo:
-#         for w in grafo.obtener_adyacentes(v):
-#             grados_entrada[w] += 1
-    
-#     return grados_entrada
+    for pagina in paginas:
+        print(f"Laburando con la siguiente pagina, {pagina}")
+        if not grafo.estan_conectados(p, pagina) or pagina in visitados: 
+            print(f"Continuo con la siguiente pagina")    
+            continue
 
-# def orden_topologico_bfs(grafo):
-#     c = Cola()
-#     orden_topologico = list()
-
-#     grados_entrada = calcular_grados_entrada(grafo)
-
-#     for v in grafo:
-#         if grados_entrada[v] == 0: c.encolar(v)
-
-#     while not c.esta_vacia():
-#         v = c.desencolar()
-#         orden_topologico.append(v)
+        visitados.add(pagina)
+        padres[pagina] = p
+        print(f"{pagina} se encuentra en los adyacentes de {p} y aun no esta visitado, llamo recursivamente")
         
-#         for w in grafo.obtener_adyacentes(v):
-#             grados_entrada[w] -= 1
-            
-#             if grados_entrada[w] == 0: c.encolar(w)
+        hay_solucion =  buscar_orden(grafo, pagina, paginas, n + 1, padres, visitados)
+        print(f"Volvi en recursividad, saco de visitados a {pagina}. N es {n}")
+        visitados.remove(pagina)
+        
+        if hay_solucion: return True
+        print(f"No hubo coincidencias, continuo con la siguiente pagina")
     
-#     return orden_topologico
+    return False
+
+def orden_valido(grafo, paginas):
+    padres = dict()
+    visitados = set()
+
+    for pagina in paginas:
+        padres[pagina] = None
+        visitados.add(pagina)
+        hay_orden = buscar_orden(grafo, pagina, paginas, 1, padres, visitados)
+        if hay_orden: return padres
     
+    return None
 
 def _backtracking(grafo, origen, n, v_act, n_act, padres, visitados):
     if n_act == n and n_act > 0: return v_act == origen

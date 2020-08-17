@@ -19,6 +19,7 @@ class Vertice:
         
         return self.clave
 
+
     def agregar_adyacente(self, vertice, peso):
         """Une el vértice con otro pasado por parametro.
         Post: se unieron dos vértices.
