@@ -14,52 +14,62 @@ CFC = None
                                                                                         #
 ######################################################################################### 
 
-def imprimir_orden(orden):
-    print(orden[0], end="")
-    for i in range(1, len(orden)): print(f", {orden[i]}", end="")
+def imprimir_form_flecha(solucion):
+    if solucion != []: print(solucion[0], end="")
+    
+    for i in range(1, len(solucion)):
+        print(f" -> {solucion[i]}", end="")
+    
+    print()
+
+def imprimir_form_coma(solucion):
+    print(solucion[0], end="")
+    for i in range(1, len(solucion)): print(f", {solucion[i]}", end="")
     print()
 
 def imprimir_componente(componente):
-    print(componente[0], end="")
-    for i in range(1, len(componente)): print(f", {componente[i]}", end="")
-    print()
+    imprimir_form_coma(orden)
 
     print(len(componente))
 
-def imprimir_ciclo(padres, destino):
+def imprimir_lectura(orden, primera):
+    solucion = list()
+
+    while True:
+        solucion.append(primera)
+        if not orden[primera]: break
+        primera = orden[primera]
+    
+    imprimir_form_coma(solucion)
+
+def imprimir_ciclo(ciclo, destino):
     solucion = list()
 
     while True:
         solucion.insert(0, destino)
         
-        if padres[destino] == solucion[len(solucion) - 1]:
-            solucion.insert(0, padres[destino])
+        if ciclo[destino] == solucion[len(solucion) - 1]:
+            solucion.insert(0, ciclo[destino])
             break
         
-        destino = padres[destino]
+        destino = ciclo[destino]
 
-    if solucion != []: print(solucion[0], end="")
-    for i in range(1, len(solucion)):
-        print(f" -> {solucion[i]}", end="")
-    print()
+    imprimir_form_flecha(solucion)
 
-def imprimir_camino(padres, destino):
+def imprimir_camino(padres, destino, costo=None):
     solucion = list()
-    costo = 0
+    costo_aux = 0
 
     while True:
         solucion.insert(0, destino)
         if not padres[destino]: break
-        costo += 1
+        costo_aux += 1
         destino = padres[destino]
     
-    if solucion != []: print(solucion[0], end="")
-    
-    for i in range(1, len(solucion)):
-        print(f" -> {solucion[i]}", end="")
-    print()
+    imprimir_form_flecha(solucion)
 
-    print(f"Costo: {costo}")
+    if not costo: print(f"Costo: {costo_aux}")
+    else: print(f"Costo: {costo}")
 
 #########################################################################################
                                                                                         #
@@ -99,31 +109,22 @@ def ciclo(grafo, origen, n):
     else: print(ERR_CICLO)
     
 def lectura(grafo, paginas):
-    orden = orden_valido(grafo, paginas)
-    print(orden)
-    # if not orden: print(ERR_LECTURA)
-    # imprimir_orden(orden)
-
-def mas_importantes():
-    pass
+    orden, primera = orden_valido(grafo, paginas)
+    
+    if not orden: print(ERR_LECTURA)
+    imprimir_lectura(orden, primera)
 
 def diametro(grafo):
     diametro, destino, camino = obtener_diametro(grafo)
-    imprimir_camino(camino, destino)
-    print(f"Costo: {diametro}")
+    imprimir_camino(camino, destino, diametro)
 
 def todos_en_rango(grafo, pagina, n):
-    cant = rango_n(grafo, pagina, n)
-    print(cant)
+    cantidad = rango_n(grafo, pagina, n)
+    print(cantidad)
 
 def navegacion(grafo, origen):
     camino = camino_dfs(grafo, origen)
-    
-    if camino != []: print(camino[0], end="")
-
-    for i in range(1, len(camino)):
-        print(f" -> {camino[i]} ", end="")
-    print()
+    imprimir_form_flecha(camino)
 
 def coeficiente_de_clustering(grafo, pagina, cant_params):
     if cant_params == 0:
@@ -135,3 +136,6 @@ def coeficiente_de_clustering(grafo, pagina, cant_params):
 
 def clear():
     os.system("clear")
+
+def mas_importantes():
+    pass

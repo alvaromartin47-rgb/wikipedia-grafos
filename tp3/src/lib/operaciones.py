@@ -63,7 +63,6 @@ def cargar_contenido(ruta_archivo):
     return red_internet
 
 
-
 def camino_minimo_bfs(grafo, origen, destino=None):
     padres = dict()
     cola = Cola()
@@ -87,6 +86,7 @@ def camino_minimo_bfs(grafo, origen, destino=None):
     
     if not destino: return padres, dist
     return None, None
+
 
 def agregar_componente(componentes, v, pila):
     componente = list()
@@ -129,12 +129,11 @@ def cfc(grafo):
 
 
 def buscar_orden(grafo, p, paginas, n, padres, visitados):
-    # time.sleep(1)
     print(f"Laburando con {p}")
     print(f"n es {n} y la cantidad de paginas es {len(paginas)}")
-    if n == len(paginas): 
+    if n == len(paginas):
         print("Hay coincidencia! devuelvo True")
-        return True
+        return True, p
     
     for pagina in paginas:
         print(f"Laburando con la siguiente pagina, {pagina}")
@@ -146,14 +145,17 @@ def buscar_orden(grafo, p, paginas, n, padres, visitados):
         padres[pagina] = p
         print(f"{pagina} se encuentra en los adyacentes de {p} y aun no esta visitado, llamo recursivamente")
         
-        hay_solucion =  buscar_orden(grafo, pagina, paginas, n + 1, padres, visitados)
+        hay_solucion, primera =  buscar_orden(grafo, pagina, paginas, n + 1, padres, visitados)
         print(f"Volvi en recursividad, saco de visitados a {pagina}. N es {n}")
         visitados.remove(pagina)
         
-        if hay_solucion: return True
+        if hay_solucion: 
+            print("Hay coincidencia! devuelvo True")
+            return True, primera
+            
         print(f"No hubo coincidencias, continuo con la siguiente pagina")
     
-    return False
+    return False, None
 
 def orden_valido(grafo, paginas):
     padres = dict()
@@ -162,10 +164,10 @@ def orden_valido(grafo, paginas):
     for pagina in paginas:
         padres[pagina] = None
         visitados.add(pagina)
-        hay_orden = buscar_orden(grafo, pagina, paginas, 1, padres, visitados)
-        if hay_orden: return padres
+        hay_orden, primera = buscar_orden(grafo, pagina, paginas, 1, padres, visitados)
+        if hay_orden: return padres, primera
     
-    return None
+    return None, None
 
 def _backtracking(grafo, origen, n, v_act, n_act, padres, visitados):
     if n_act == n and n_act > 0: return v_act == origen
