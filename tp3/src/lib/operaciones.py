@@ -147,6 +147,9 @@ def cfc(grafo):
 
 
 def heap_a_lista(q):
+    """Quita los elementos de un heap de minimos y devuelve una lista con los elementos
+    ordenados de mayor a menor.
+    """
     solucion = list()
     
     while len(q) > 0:
@@ -254,6 +257,9 @@ def orden_valido(grafo, vertices):
 
 
 def backtracking(grafo, origen, n, v_act, n_act, padres, visitados):
+    """Algoritmo basado en backtraking que busca un ciclo de largo _n_ dentro de _grafo_.
+    Devuelve True si lo encuentra, de lo contrario False. La solucion se encuentra en _padres_.
+    """
     if n_act == n and n_act > 0: return v_act == origen
     if v_act == origen and n_act > 0: return False
     
@@ -393,6 +399,7 @@ def _orden_aleatorio_(grafo, v, visitados, orden):
 
 def orden_aleatorio(grafo):
     """Devuelve un orden aleatorio en el cual se puede recorrer el grafo (recorrido dfs)."""
+
     visitados = set()
     orden = []
 
