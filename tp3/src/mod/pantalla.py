@@ -12,13 +12,13 @@ def imprimir_form_flecha(solucion):
     
     print()
 
-def imprimir_form_coma(solucion):
+def imprimir_form_coma(solucion, n):
     print(solucion[0], end="")
-    for i in range(1, len(solucion)): print(f", {solucion[i]}", end="")
+    for i in range(1, n): print(f", {solucion[i]}", end="")
     print()
 
-def imprimir_componente(componente):
-    imprimir_form_coma(componente)
+def imprimir_componente(componente, n):
+    imprimir_form_coma(componente, n)
 
 def imprimir_lectura(orden, primera):
     solucion = list()

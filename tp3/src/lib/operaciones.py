@@ -1,6 +1,7 @@
 import sys
 import math
 import random
+import heapq
 from collections import defaultdict
 from lib.grafo.grafo import Grafo
 from lib.cola.cola import Cola
@@ -96,6 +97,10 @@ def camino_minimo_bfs(grafo, origen, destino=None):
 
 
 def agregar_componente(componentes, v, pila):
+    """Recibe una pila, un vertice y una lista de componentes.
+    Agrega a la lista una nueva lista con una nueva componente que se obtiene
+    desapilando cada elemento de la pila hasta encontrarse con _v_.
+    """
     componente = list()
 
     while not pila.esta_vacia():
@@ -107,6 +112,8 @@ def agregar_componente(componentes, v, pila):
         componentes[vertice] = componente
 
 def _cfc(grafo, v, visitados, mb, orden, pila, componentes):
+    """Recorre _grafo_ con el recorrido dfs y calcula las componentes fuertemente conexas."""
+
     visitados.add(v)
     pila.apilar(v)
     mb[v] = orden[v]
@@ -139,7 +146,77 @@ def cfc(grafo):
     return componentes
 
 
+def heap_a_lista(q):
+    solucion = list()
+    
+    while len(q) > 0:
+        pr, pagina = heapq.heappop(q)
+        solucion.insert(0, pagina)
+
+    return solucion
+
+def calcular_grados_y_padres(grafo):
+    """Calcula los grados de entrada y padres de cada vertice de _grafo_ devolviendo
+    dos diccionarios con la información.
+    """
+    grados_entrada = defaultdict(lambda : 0)
+    padres = defaultdict(lambda : [])
+    visitados = set()
+    
+    for v in grafo:
+        if v not in visitados:
+            visitados.add(v)
+            padres[v] = None
+            grados_entrada[v] = 0
+
+        for w in grafo.obtener_adyacentes(v):
+            visitados.add(w)
+            if not padres[w]: padres[w] = list()
+            padres[w].append(v)
+            grados_entrada[w] += 1
+    
+    return grados_entrada, padres
+
+def calcular_page_rank(grafo, padres, dic_pr, q, grados, d, n, k):
+    """Itera _k_ veces _grafo_, calcula el page rank de cada vertice y agrega el resultado
+    de la ultima iteración a un heap.
+    """
+    for i in range(1, k):
+        for v in grafo:
+            suma = 0
+            if not padres[v]: suma = dic_pr[v][i - 1]
+            else:
+                for padre in padres[v]:   
+                    if grados[padre] == 0: continue
+                    suma += dic_pr[padre][i - 1] / len(grafo.obtener_adyacentes(padre))
+            
+            dic_pr[v][i] = ((1 - d) / n) + d * suma
+            
+    for v in grafo:
+        heapq.heappush(q, (dic_pr[v][k - 1], v))
+    
+def page_rank(grafo, k):
+    """Calcula el page rank de cada vertice del grafo iterandolo _k_ veces y devuelve una
+    lista ordenada de mayor a menor valor de page rank.
+    Pre: el grafo fue creado.
+    """
+    n = len(grafo)
+    q = list()
+    dic_pr = dict()
+    
+    grados, padres = calcular_grados_y_padres(grafo)
+    for v in grafo: dic_pr[v] = {0: 1 / n}
+
+    calcular_page_rank(grafo, padres, dic_pr, q, grados, 0.85, n, k)
+
+    return heap_a_lista(q)
+
+
 def buscar_orden(grafo, v_act, vertices, n, padres, visitados):
+    """Esta función recorre cada vertice de _grafo_ buscando un orden valido para _vertices_
+    devuelve True si fue posible, y el primer vertice del orden. De lo contrario, si no existe
+    orden devuelve False y None.
+    """
     if n == len(vertices): return True, v_act
     
     for v in vertices:
@@ -292,7 +369,9 @@ def obtener_coef_clustering(grafo, vertice):
     return cant / (grado_salida * (grado_salida - 1))
 
 def obtener_arista_entrada_todos(grafo):
-    """Devuelve un dic con la lista de vértices de entrada de cada vértice del grafo. Recibe como parametro un grafo ya creado."""
+    """Devuelve un dic con la lista de vértices de entrada de cada vértice del grafo. Recibe como
+    parametro un grafo ya creado.
+    """
     entrada = {}
 
     for v in grafo:
@@ -328,8 +407,10 @@ def orden_aleatorio(grafo):
     return orden
 
 def max_frecuencia(comunidades, v, aristas_entrada):
-    """Devuelve la comunidad con mayor frecuencia en las aristas de entrada de un vértice. Recibe como parámetro un dic con todos las comunidades del grafo, el vértice
-    en cuestión y las aristas de entrada del mismo."""
+    """Devuelve la comunidad con mayor frecuencia en las aristas de entrada de un vértice. 
+    Recibe como parámetro un dic con todos las comunidades del grafo, el vértice en cuestión y 
+    las aristas de entrada del mismo.
+    """
     frecuencia = {}
     maximo = 0
     label = comunidades[v]
@@ -345,7 +426,9 @@ def max_frecuencia(comunidades, v, aristas_entrada):
     return label
 
 def label_propagation(grafo):
-    """Algoritmo para calcular las comunidades que existen en un grafo. Recibe como parametro el grafo."""
+    """Algoritmo para calcular las comunidades que existen en un grafo. Recibe como parametro 
+    el grafo.
+    """
     label  = {}
     entrada = obtener_arista_entrada_todos(grafo)
 
