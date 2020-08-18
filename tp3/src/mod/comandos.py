@@ -144,7 +144,8 @@ def coeficiente_de_clustering(red_internet, origen, cant_params):
 def obtener_comunidad(grafo, pagina):
     """Recibe un grafo en forma de red de internet y una página web. Devuelve todas las páginas
     que pertenecen a la misma comunidad que la página pasada por parámetro.
-    Pre: el grafo fue creado y _pagina_ pertenece a la red."""
+    Pre: el grafo fue creado y _pagina_ pertenece a la red.
+    """
     comunidades = label_propagation(grafo)
     comunidad_pagina = comunidades[pagina]
     comunidad = []
