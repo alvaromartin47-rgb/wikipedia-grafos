@@ -28,7 +28,7 @@ def imprimir_lectura(orden, primera):
         if not orden[primera]: break
         primera = orden[primera]
     
-    imprimir_form_coma(solucion)
+    imprimir_form_coma(solucion, len(solucion))
 
 def imprimir_ciclo(ciclo, destino):
     solucion = list()
