@@ -135,7 +135,7 @@ def cfc(grafo):
     visitados = set()
     mb = dict()
     orden = dict()
-    pila = Pila()
+    pila = 
     componentes = dict()
 
     for v in grafo:
