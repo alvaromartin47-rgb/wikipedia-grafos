@@ -1,7 +1,7 @@
 import os
 from decimal import Decimal
 from mod.pantalla import *
-from lib.operaciones import camino_minimo_bfs, cfc, obtener_ciclo_n, rango_n, camino_dfs, obtener_diametro, obtener_promedio_clustering, obtener_coef_clustering, orden_valido, label_propagation
+from lib.operaciones import camino_minimo_bfs, cfc, obtener_ciclo_n, rango_n, camino_dfs, obtener_diametro, obtener_promedio_clustering, obtener_coef_clustering, orden_valido, label_propagation, page_rank
 from mod.mensajes import *
 
 # Esta será una variable global donde se almacenaran las componentes fuertemente conexas
@@ -9,6 +9,11 @@ from mod.mensajes import *
 # conectividad, de lo contrario se mantendrá en None.
 
 CFC = None
+
+# En esta variable global se almacenará el ranking de paginas mas importantes de la red si
+# el comando mas_importantes es llamado, de lo contrario se mantendrá en None.
+
+RANK = None
 
 #########################################################################################
                                                                                         #
@@ -36,6 +41,17 @@ def camino(red_internet, origen, destino):
     if not padres and not distancia: print(ERR_CAMINO)
     else: imprimir_camino(padres, destino)
 
+def mas_importantes(red_internet, n):
+    """Recibe un grafo en forma de red de internet y un valor _n_, obtiene un ranking basado
+    en las paginas mas importantes de toda la red utilizando el algoritmo PageRank e imprime por
+    consola las _n_ paginas mas importantes.
+    Pre: el grafo fue creado.
+    """
+    global RANK
+    if not RANK: RANK = page_rank(red_internet, 15)
+
+    imprimir_form_coma(RANK, n)
+
 def conectados(red_internet, origen):
     """Recibe un grafo en forma de red de internet, calcula la cantidad de paginas
     conectadas entre sí de tal forma en la que cada pagina puede llegar hasta _origen_ y las
@@ -52,7 +68,7 @@ def conectados(red_internet, origen):
         print(ERR_CONEC)
         return
 
-    imprimir_componente(componente)
+    imprimir_componente(componente, len(componente))
 
 def ciclo(red_internet, origen, n):
     """Recibe un grafo en forma de red de internet y un largo _n_.
@@ -136,12 +152,9 @@ def obtener_comunidad(grafo, pagina):
     for c in comunidades:
         if comunidades[c] == comunidad_pagina: comunidad.append(c)
     
-    imprimir_form_coma(comunidad)
+    imprimir_form_coma(comunidad, len(comunidad))
 
 def clear():
     """Limpia la consola"""
     
     os.system("clear")
-
-def mas_importantes():
-    pass
