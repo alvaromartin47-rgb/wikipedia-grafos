@@ -271,7 +271,7 @@ def obtener_promedio_clustering(grafo):
     for v in grafo:
         sumatoria += obtener_coef_clustering(grafo, v)
 
-    return sumatoria / 3
+    return sumatoria / n
 
 def obtener_coef_clustering(grafo, vertice):
     """Devuelve el coeficiente Clustering de un vértice. Recibe como parámetros el grafo y el 
