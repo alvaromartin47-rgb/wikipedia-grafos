@@ -1,7 +1,7 @@
 import os
 from decimal import Decimal
 from mod.pantalla import *
-from lib.operaciones import camino_minimo_bfs, cfc, obtener_ciclo_n, rango_n, camino_dfs, obtener_diametro, obtener_promedio_clustering, obtener_coef_clustering, orden_valido, label_propagation, page_rank
+from lib.operaciones import camino_minimo_bfs, cfc, obtener_ciclo_n, rango_n, camino_dfs, obtener_diametro, obtener_promedio_clustering, obtener_coef_clustering, label_propagation, page_rank
 from mod.mensajes import *
 
 # Esta será una variable global donde se almacenaran las componentes fuertemente conexas
@@ -27,7 +27,7 @@ def listar_comandos(funcionalidades):
     """
     print()
     for comando in funcionalidades:
-        if comando == "listar_comandos": continue
+        if comando == "listar_operaciones": continue
         print(comando)
 
 def camino(red_internet, origen, destino):
@@ -82,20 +82,6 @@ def ciclo(red_internet, origen, n):
     
     if hay_ciclo: imprimir_ciclo(ciclo, origen)
     else: print(ERR_CICLO)
-    
-def lectura(red_internet, paginas):
-    """Recibe un grafo en forma de red de internet y un conjunto de paginas pertenecientes
-    a la red.
-    Calcula un orden valido para leer dichas paginas de la forma, suponiendo A y B paginas,
-    Si B esta conectado con A y A es padre de B, el orden a deberá ser leer primero B y luego A.
-    En caso de que exista orden válido, muestra la solución por consola, de lo contrario
-    un mensaje indicando que no existe orden tal para leer las paginas.
-    Pre: el grafo fue creado.
-    """
-    orden, primera = orden_valido(red_internet, paginas)
-    
-    if not orden: print(ERR_LECTURA)
-    else: imprimir_lectura(orden, primera)
 
 def diametro(red_internet):
     """Recibe un grafo en forma de red de internet, calcula el camino mas largo de

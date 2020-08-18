@@ -9,7 +9,7 @@
 import sys
 from mod.mensajes import *
 from mod.comandos import *
-from lib.operaciones import *
+from lib.operaciones import obtener_comandos, cargar_contenido
                                                                                      
 # Esta constante almacena el directorio python path para incluir archivos y carpetas    
 # en el programa.                                                                       
@@ -41,14 +41,12 @@ def procesar_comandos(comando, parametros, red_internet):
     elif comando == "camino": camino(red_internet, parametros[0], parametros[1])
     elif comando == "conectados": conectados(red_internet, parametros[0])
     elif comando == "ciclo": ciclo(red_internet, parametros[0], parametros[1])
-    elif comando == "lectura": lectura(red_internet, parametros)
     elif comando == "mas_importantes": mas_importantes(red_internet, int(parametros[0]))
     elif comando == "diametro": diametro(red_internet)
     elif comando == "rango": todos_en_rango(red_internet, parametros[0], int(parametros[1]))
     elif comando == "navegacion": navegacion(red_internet, parametros[0])
     elif comando == "clustering": coeficiente_de_clustering(red_internet, parametros, len(parametros))
     elif comando == "comunidad": obtener_comunidad(red_internet, parametros[0])
-    elif comando == "clear": clear()
 
 
 def procesar_entrada(red_internet):

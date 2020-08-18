@@ -135,7 +135,7 @@ def cfc(grafo):
     visitados = set()
     mb = dict()
     orden = dict()
-    pila = 
+    pila = Pila()
     componentes = dict()
 
     for v in grafo:
@@ -213,48 +213,7 @@ def page_rank(grafo, k):
     calcular_page_rank(grafo, padres, dic_pr, q, grados, 0.85, n, k)
 
     return heap_a_lista(q)
-
-
-def buscar_orden(grafo, v_act, vertices, n, padres, visitados):
-    """Esta función recorre cada vertice de _grafo_ buscando un orden valido para _vertices_
-    devuelve True si fue posible, y el primer vertice del orden. De lo contrario, si no existe
-    orden devuelve False y None.
-    """
-    if n == len(vertices): return True, v_act
     
-    for v in vertices:
-        if not grafo.estan_conectados(v_act, v) or v in visitados: continue
-
-        visitados.add(v)
-        padres[v] = v_act
-
-        hay_solucion, primera =  buscar_orden(grafo, v, vertices, n + 1, padres, visitados)
-        
-        visitados.remove(v)
-        
-        if hay_solucion: return True, primera
-
-    return False, None
-
-def orden_valido(grafo, vertices):
-    """Recibe un grafo y un conjunto de vertices.
-    Busca un orden valido para recorrer los vertices de modo que si B es adyacente
-    de A, primero debe aparecer B. Devuelve una tupla con el diccionario de padres y
-    el orden correspondiente y un vertice que será el inicio. De lo contrario una tupla
-    con None.
-    Pre: el grafo fue creado.
-    """
-    padres = dict()
-    visitados = set()
-
-    for v in vertices:
-        padres[v] = None
-        visitados.add(v)
-        hay_orden, primera = buscar_orden(grafo, v, vertices, 1, padres, visitados)
-        if hay_orden: return padres, primera
-    
-    return None, None
-
 
 def backtracking(grafo, origen, n, v_act, n_act, padres, visitados):
     """Algoritmo basado en backtraking que busca un ciclo de largo _n_ dentro de _grafo_.
