@@ -1,5 +1,6 @@
 import sys
 import math
+import random
 from collections import defaultdict
 from lib.grafo.grafo import Grafo
 from lib.cola.cola import Cola
@@ -291,3 +292,70 @@ def obtener_coef_clustering(grafo, vertice):
     denominador = grado_salida * (grado_salida - 1)
     coef = cant / denominador
     return round(coef, 3)
+
+def obtener_arista_entrada_todos(grafo):
+    """Devuelve un dic con la lista de vértices de entrada de cada vértice del grafo. Recibe como parametro un grafo ya creado."""
+    entrada = {}
+
+    for v in grafo:
+        entrada[v] = []
+
+    for v in grafo:
+        for w in grafo.obtener_adyacentes(v):
+            entrada[w].append(v)
+    
+    return entrada
+
+def _orden_aleatorio_(grafo, v, visitados, orden):
+    visitados.add(v)
+    orden.append(v)
+    
+    for w in grafo.obtener_adyacentes(v):
+        if w not in visitados:
+            _orden_aleatorio_(grafo, w, visitados, orden)
+
+def orden_aleatorio(grafo):
+    """Devuelve un orden aleatorio en el cual se puede recorrer el grafo (recorrido dfs)."""
+    visitados = set()
+    orden = []
+
+    vertices = grafo.obtener_vertices()
+    i = random.randrange(0, len(vertices))
+            
+    _orden_aleatorio_(grafo, vertices[i], visitados, orden)
+
+    for v in grafo:
+        if v not in visitados: _orden_aleatorio_(grafo, v, visitados, orden)
+    
+    return orden
+
+def max_frecuencia(comunidades, v, aristas_entrada):
+    """Devuelve la comunidad con mayor frecuencia en las aristas de entrada de un vértice. Recibe como parámetro un dic con todos las comunidades del grafo, el vértice
+    en cuestión y las aristas de entrada del mismo."""
+    frecuencia = {}
+    maximo = 0
+    label = comunidades[v]
+
+    for w in aristas_entrada:
+        frecuencia[comunidades[w]] = frecuencia.get(comunidades[w], 0) + 1
+    
+    for f in frecuencia:
+        if frecuencia[f] >= maximo:
+            label = f
+            maximo = frecuencia[f]
+    
+    return label
+
+def label_propagation(grafo):
+    """Algoritmo para calcular las comunidades que existen en un grafo. Recibe como parametro el grafo."""
+    label  = {}
+    entrada = obtener_arista_entrada_todos(grafo)
+
+    for v in grafo:
+        label[v] = v
+
+    orden = orden_aleatorio(grafo)
+    for i in range(100):
+        for v in orden: label[v] = max_frecuencia(label, v, entrada[v])
+    
+    return label

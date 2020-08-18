@@ -35,7 +35,7 @@ def procesar_comandos(comando, parametros, red_internet):
     if n_params != "n" and len(parametros) not in range(n_params[0], n_params[1]):
         print(ERR_PARAMS.format(comando))
 
-    if comando == "listar_comandos": listar_comandos(FUNCIONALIDADES)
+    if comando == "listar_operaciones": listar_comandos(FUNCIONALIDADES)
     elif comando == "camino": camino(red_internet, parametros[0], parametros[1])
     elif comando == "conectados": conectados(red_internet, parametros[0])
     elif comando == "ciclo": ciclo(red_internet, parametros[0], parametros[1])
@@ -45,6 +45,7 @@ def procesar_comandos(comando, parametros, red_internet):
     elif comando == "rango": todos_en_rango(red_internet, parametros[0], int(parametros[1]))
     elif comando == "navegacion": navegacion(red_internet, parametros[0])
     elif comando == "clustering": coeficiente_de_clustering(red_internet, parametros, len(parametros))
+    elif comando == "comunidad": obtener_comunidad(red_internet, parametros[0])
     elif comando == "clear": clear()
 
 

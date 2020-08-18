@@ -1,6 +1,7 @@
 import os
+from decimal import Decimal
 from mod.pantalla import *
-from lib.operaciones import camino_minimo_bfs, cfc, obtener_ciclo_n, rango_n, camino_dfs, obtener_diametro, obtener_promedio_clustering, obtener_coef_clustering, orden_valido
+from lib.operaciones import camino_minimo_bfs, cfc, obtener_ciclo_n, rango_n, camino_dfs, obtener_diametro, obtener_promedio_clustering, obtener_coef_clustering, orden_valido, label_propagation
 from mod.mensajes import *
 
 # Esta será una variable global donde se almacenaran las componentes fuertemente conexas
@@ -117,11 +118,25 @@ def coeficiente_de_clustering(red_internet, origen, cant_params):
     Pre: el grafo fue creado y _origen_ pertenece a la red.
     """
     if cant_params == 0:
-        promedio = obtener_promedio_clustering(red_internet)
-        print(promedio)
+        coef = obtener_promedio_clustering(red_internet)
     else:
         coef = obtener_coef_clustering(red_internet, origen[0])
-        print(coef)
+    
+    d = Decimal(coef)
+    print('{:.02}'.format(d))
+    
+def obtener_comunidad(grafo, pagina):
+    """Recibe un grafo en forma de red de internet y una página web. Devuelve todas las páginas
+    que pertenecen a la misma comunidad que la página pasada por parámetro.
+    Pre: el grafo fue creado y _pagina_ pertenece a la red."""
+    comunidades = label_propagation(grafo)
+    comunidad_pagina = comunidades[pagina]
+    comunidad = []
+
+    for c in comunidades:
+        if comunidades[c] == comunidad_pagina: comunidad.append(c)
+    
+    imprimir_form_coma(comunidad)
 
 def clear():
     """Limpia la consola"""
