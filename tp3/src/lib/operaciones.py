@@ -352,8 +352,8 @@ def label_propagation(grafo):
     for v in grafo:
         label[v] = v
 
-    orden = orden_aleatorio(grafo)
-    for i in range(100):
+    for i in range(50):
+        orden = orden_aleatorio(grafo)
         for v in orden: label[v] = max_frecuencia(label, v, entrada[v])
     
     return label
