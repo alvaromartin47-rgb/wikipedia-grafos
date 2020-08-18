@@ -1,4 +1,4 @@
-listar_comandos,0
+listar_operaciones,0
 camino,2
 conectados,1
 ciclo,2
@@ -6,6 +6,7 @@ lectura,n
 mas_importantes,n
 diametro,0
 rango,2
+comunidad,1
 navegacion,1
 clustering,0:1
 clear,0
