@@ -118,17 +118,17 @@ def coeficiente_de_clustering(red_internet, origen, cant_params):
     Pre: el grafo fue creado y _origen_ pertenece a la red.
     """
     if cant_params == 0:
-        coef = obtener_promedio_clustering(red_internet)
+        res = obtener_promedio_clustering(red_internet)
     else:
-        coef = obtener_coef_clustering(red_internet, origen[0])
+        res = obtener_coef_clustering(red_internet, origen[0])
     
-    d = Decimal(coef)
-    print('{:.02}'.format(d))
+    print("{:.3f}".format(res))
     
 def obtener_comunidad(grafo, pagina):
     """Recibe un grafo en forma de red de internet y una página web. Devuelve todas las páginas
     que pertenecen a la misma comunidad que la página pasada por parámetro.
-    Pre: el grafo fue creado y _pagina_ pertenece a la red."""
+    Pre: el grafo fue creado y _pagina_ pertenece a la red.
+    """
     comunidades = label_propagation(grafo)
     comunidad_pagina = comunidades[pagina]
     comunidad = []

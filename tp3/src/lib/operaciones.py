@@ -271,7 +271,7 @@ def obtener_promedio_clustering(grafo):
     for v in grafo:
         sumatoria += obtener_coef_clustering(grafo, v)
 
-    return round(sumatoria / n, 3)
+    return sumatoria / 3
 
 def obtener_coef_clustering(grafo, vertice):
     """Devuelve el coeficiente Clustering de un vértice. Recibe como parámetros el grafo y el 
@@ -289,9 +289,7 @@ def obtener_coef_clustering(grafo, vertice):
             if v == w: continue
             if w in grafo.obtener_adyacentes(v): cant += 1
     
-    denominador = grado_salida * (grado_salida - 1)
-    coef = cant / denominador
-    return round(coef, 3)
+    return cant / (grado_salida * (grado_salida - 1))
 
 def obtener_arista_entrada_todos(grafo):
     """Devuelve un dic con la lista de vértices de entrada de cada vértice del grafo. Recibe como parametro un grafo ya creado."""
