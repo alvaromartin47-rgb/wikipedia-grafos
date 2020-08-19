@@ -69,6 +69,7 @@ def conectados(red_internet, origen):
         return
 
     imprimir_componente(componente, len(componente))
+    print(len(componente))
 
 def ciclo(red_internet, origen, n):
     """Recibe un grafo en forma de red de internet y un largo _n_.

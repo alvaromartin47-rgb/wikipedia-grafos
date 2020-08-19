@@ -102,11 +102,11 @@ def agregar_componente(componentes, v, pila):
     desapilando cada elemento de la pila hasta encontrarse con _v_.
     """
     componente = list()
-
-    while not pila.esta_vacia():
-        vertice = pila.desapilar()
-        componente.append(vertice)
-        if vertice == v: break
+    
+    while True:
+        w = pila.desapilar()
+        componente.append(w)
+        if w == v: break
 
     for vertice in componente:
         componentes[vertice] = componente
