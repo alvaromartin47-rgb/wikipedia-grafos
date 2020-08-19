@@ -111,7 +111,7 @@ def agregar_componente(componentes, v, pila):
     for vertice in componente:
         componentes[vertice] = componente
 
-def _cfc(grafo, v, visitados, mb, orden, pila, componentes):
+def _cfc(grafo, v, visitados, mb, orden, pila, componentes, indice):
     """Recorre _grafo_ con el recorrido dfs y calcula las componentes fuertemente conexas."""
 
     visitados.add(v)
@@ -120,8 +120,8 @@ def _cfc(grafo, v, visitados, mb, orden, pila, componentes):
     
     for w in grafo.obtener_adyacentes(v):
         if w not in visitados:
-            orden[w] = orden[v] + 1
-            _cfc(grafo, w, visitados, mb, orden, pila, componentes)
+            orden[w] = indice + 1
+            _cfc(grafo, w, visitados, mb, orden, pila, componentes, indice + 1)
         
         if pila.pertenece(w): mb[v] = min(mb[v], mb[w])
 
@@ -141,7 +141,7 @@ def cfc(grafo):
     for v in grafo:
         if v not in visitados:
             orden[v] = 0
-            _cfc(grafo, v, visitados, mb, orden, pila, componentes)
+            _cfc(grafo, v, visitados, mb, orden, pila, componentes, 0)
 
     return componentes
 
