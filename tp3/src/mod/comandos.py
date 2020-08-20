@@ -25,7 +25,6 @@ def listar_comandos(funcionalidades):
     """Recibe una lista de comandos validos para el programa e
     los imprime por consola.
     """
-    print()
     for comando in funcionalidades:
         if comando == "listar_operaciones": continue
         print(comando)

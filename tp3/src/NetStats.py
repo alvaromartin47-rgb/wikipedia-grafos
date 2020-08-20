@@ -67,8 +67,8 @@ def main():
     
     if len(sys.argv) != 2:
         print(ERR_ARGV)
-        return
-    
+        return 
+        
     red_internet = cargar_contenido(sys.argv[1])
     
     procesar_entrada(red_internet)
