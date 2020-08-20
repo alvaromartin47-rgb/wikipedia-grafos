@@ -199,8 +199,7 @@ def calcular_page_rank(grafo, padres, dic_pr, q, grados, d, n, k):
             
             dic_pr[v][i] = ((1 - d) / n) + d * suma
             
-    for v in grafo:
-        heapq.heappush(q, (dic_pr[v][k - 1], v))
+    for v in grafo: heapq.heappush(q, (dic_pr[v][k - 1], v))
     
 def page_rank(grafo, k):
     """Calcula el page rank de cada vertice del grafo iterandolo _k_ veces y devuelve una

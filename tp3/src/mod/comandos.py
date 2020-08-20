@@ -15,9 +15,9 @@ CFC = None
 
 RANK = None
 
-DIAMETRO = {}
-
 # En esta variable global guardamos el _diametro_, _destino_ y _camino_ de la red.
+
+DIAMETRO = {}
 
 #########################################################################################
                                                                                         #
@@ -147,8 +147,3 @@ def obtener_comunidad(grafo, pagina):
         if comunidades[c] == comunidad_pagina: comunidad.append(c)
     
     imprimir_form_coma(comunidad, len(comunidad))
-
-def clear():
-    """Limpia la consola"""
-    
-    os.system("clear")
