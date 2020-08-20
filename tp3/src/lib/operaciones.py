@@ -280,28 +280,14 @@ def rango_n(grafo, vertice, n):
     parámetro el grafo, un vértice y un número n.
     Pre: el grafo fue creado y el vértice se encuentra en él.
     """
-    distancia = {}
-    visitados = set()
-    cola = Cola()
+    distancia = camino_minimo_bfs(grafo, vertice)[1]
     contador = 0
-    
-    distancia[vertice] = 0
-    cola.encolar(vertice)
-    visitados.add(vertice)
 
-    while not cola.esta_vacia():
-        v = cola.desencolar()
-        if distancia[v] > n: break
-
-        for w in grafo.obtener_adyacentes(v):
-            if w not in visitados:
-                visitados.add(w)
-                cola.encolar(w)
-                distancia[w] = distancia[v] + 1
-                
-                if distancia[w] == n: contador += 1
+    for w in distancia:
+        if distancia[w] == n: contador += 1
     
     return contador
+
 
 
 def _camino_dfs(grafo, v, contador, camino):
@@ -311,6 +297,7 @@ def _camino_dfs(grafo, v, contador, camino):
     adyacentes = grafo.obtener_adyacentes(v)
     
     if len(adyacentes) == 0: return
+    
     _camino_dfs(grafo, adyacentes[0], contador + 1, camino)
 
 def camino_dfs(grafo, origen):
@@ -343,20 +330,19 @@ def obtener_coef_clustering(grafo, vertice):
     vértice en cuestión.
     Pre: el grafo fue creado y el vértice pertenece a él.
     """
-    relaciones = 0
+    cant = 0
     adyacentes = grafo.obtener_adyacentes(vertice)
     grado_salida = len(adyacentes)
-    ok = False
-
+    
     if grado_salida < 2: return 0
     
     for v in adyacentes:
         if v == vertice: continue
         for w in adyacentes:
             if w == v: continue
-            if grafo.estan_conectados(v, w): relaciones += 1
-
-    return relaciones / (grado_salida * (grado_salida - 1))
+            if grafo.estan_conectados(v, w): cant += 1
+            
+    return cant / (grado_salida * (grado_salida - 1))
 
 def obtener_arista_entrada_todos(grafo):
     """Devuelve un dic con la lista de vértices de entrada de cada vértice del grafo. Recibe como

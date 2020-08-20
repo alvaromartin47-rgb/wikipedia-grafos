@@ -15,9 +15,9 @@ CFC = None
 
 RANK = None
 
-# En esta variable global guardamos el _diametro_, _destino_ y _camino_ de la red.
-
 DIAMETRO = {}
+
+# En esta variable global guardamos el _diametro_, _destino_ y _camino_ de la red.
 
 #########################################################################################
                                                                                         #
