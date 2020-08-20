@@ -7,8 +7,6 @@ from lib.grafo.grafo import Grafo
 from lib.cola.cola import Cola
 from lib.pila.pila import Pila
 
-
-
 SEPARADOR = f"{chr(9)}"
 sys.setrecursionlimit(50000)
 
@@ -274,6 +272,7 @@ def obtener_diametro(grafo):
 
     return max_dist_min, destino, camino
 
+
 def rango_n(grafo, vertice, n):
     """Devuelve la cantidad de vértices que se encuentra a distancia n de un vértice. Recibe como
     parámetro el grafo, un vértice y un número n.
@@ -286,7 +285,6 @@ def rango_n(grafo, vertice, n):
         if distancia[w] == n: contador += 1
     
     return contador
-
 
 
 def _camino_dfs(grafo, v, contador, camino):
@@ -312,6 +310,7 @@ def camino_dfs(grafo, origen):
     
     return camino
 
+
 def obtener_promedio_clustering(grafo):
     """Devuelve el promedio de los coeficientes Clustering de todos los vértices del grafo.
     Pre: el grafo fue creado.
@@ -319,8 +318,7 @@ def obtener_promedio_clustering(grafo):
     sumatoria = 0
     n = len(grafo)
 
-    for v in grafo:
-        sumatoria += obtener_coef_clustering(grafo, v)
+    for v in grafo: sumatoria += obtener_coef_clustering(grafo, v)
 
     return sumatoria / n
 
@@ -344,17 +342,15 @@ def obtener_coef_clustering(grafo, vertice):
     return cant / (grado_salida * (grado_salida - 1))
 
 def obtener_arista_entrada_todos(grafo):
-    """Devuelve un dic con la lista de vértices de entrada de cada vértice del grafo. Recibe como
-    parametro un grafo ya creado.
+    """Devuelve un diccionario con la lista de vértices de entrada de cada vértice del grafo.
+    Recibe como parametro un grafo ya creado.
     """
     entrada = {}
 
-    for v in grafo:
-        entrada[v] = []
+    for v in grafo: entrada[v] = []
 
     for v in grafo:
-        for w in grafo.obtener_adyacentes(v):
-            entrada[w].append(v)
+        for w in grafo.obtener_adyacentes(v): entrada[w].append(v)
     
     return entrada
 
@@ -363,8 +359,7 @@ def _orden_aleatorio_(grafo, v, visitados, orden):
     orden.append(v)
     
     for w in grafo.obtener_adyacentes(v):
-        if w not in visitados:
-            _orden_aleatorio_(grafo, w, visitados, orden)
+        if w not in visitados: _orden_aleatorio_(grafo, w, visitados, orden)
 
 def orden_aleatorio(grafo):
     """Devuelve un orden aleatorio en el cual se puede recorrer el grafo (recorrido dfs)."""
@@ -408,8 +403,7 @@ def label_propagation(grafo):
     label  = {}
     entrada = obtener_arista_entrada_todos(grafo)
 
-    for v in grafo:
-        label[v] = v
+    for v in grafo: label[v] = v
 
     for i in range(100):
         orden = orden_aleatorio(grafo)
