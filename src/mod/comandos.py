@@ -15,6 +15,10 @@ CFC = None
 
 RANK = None
 
+# En esta variable global guardamos el _diametro_, _destino_ y _camino_ de la red.
+
+DIAMETRO = {}
+
 #########################################################################################
                                                                                         #
                                 # FUNCIONES COMANDO                                     #
@@ -25,7 +29,6 @@ def listar_comandos(funcionalidades):
     """Recibe una lista de comandos validos para el programa e
     los imprime por consola.
     """
-    print()
     for comando in funcionalidades:
         if comando == "listar_operaciones": continue
         print(comando)
@@ -82,16 +85,20 @@ def ciclo(red_internet, origen, n):
     hay_ciclo, ciclo = obtener_ciclo_n(red_internet, origen, int(n))
     
     if hay_ciclo: imprimir_ciclo(ciclo, origen)
-    else: print(ERR_CICLO)
+    else: print(ERR_CAMINO)
 
 def diametro(red_internet):
     """Recibe un grafo en forma de red de internet, calcula el camino mas largo de
     toda la red y lo muestra por consola.
     Pre: el grafo fue creado.
     """
-    diametro, destino, camino = obtener_diametro(red_internet)
+    if len(DIAMETRO) == 0:
+        diametro, destino, camino = obtener_diametro(red_internet)
+        DIAMETRO[destino] = (diametro, camino)
     
-    imprimir_camino(camino, destino, diametro)
+    for dest in DIAMETRO:
+        diam, cam = DIAMETRO[dest]
+        imprimir_camino(cam, dest, diam)
 
 def todos_en_rango(red_internet, origen, n):
     """Recibe un grafo en forma de red de internet un origen y un entero n, muestra la cantidad
@@ -99,7 +106,7 @@ def todos_en_rango(red_internet, origen, n):
     Pre: el grafo fue creado y la pagina origen pertenece a la red.
     """
     cantidad = rango_n(red_internet, origen, n)
-    
+
     print(cantidad)
 
 def navegacion(red_internet, origen):
@@ -140,8 +147,3 @@ def obtener_comunidad(grafo, pagina):
         if comunidades[c] == comunidad_pagina: comunidad.append(c)
     
     imprimir_form_coma(comunidad, len(comunidad))
-
-def clear():
-    """Limpia la consola"""
-    
-    os.system("clear")
