@@ -7,6 +7,8 @@ from lib.grafo.grafo import Grafo
 from lib.cola.cola import Cola
 from lib.pila.pila import Pila
 
+
+
 SEPARADOR = f"{chr(9)}"
 sys.setrecursionlimit(50000)
 
@@ -72,27 +74,29 @@ def camino_minimo_bfs(grafo, origen, destino=None):
     camino/s minimo/s devuelve una tupla de padres y distancias.
     Pre: el grafo fue creado y origen pertenece al grafo.
     """ 
-    padres = dict()
-    cola = Cola()
-    dist = defaultdict(lambda : math.inf)
+    q = Cola()
+    visitados = set()
+    distancia = {}
+    padres = {}
 
+    q.encolar(origen)
+    visitados.add(origen)
+    distancia[origen] = 0
     padres[origen] = None
-    dist[origen] = 0
-    cola.encolar((origen, dist[origen]))
-
-    while not cola.esta_vacia():
-        v, d = cola.desencolar()
-        if v == destino: return padres, dist
+    
+    while not q.esta_vacia():
+        v = q.desencolar()
+        
+        if v == destino: return padres, distancia
 
         for w in grafo.obtener_adyacentes(v):
-            (v, w), peso = grafo.obtener_arista(v, w)
-
-            if dist[v] + peso < dist[w]:
-                dist[w] = dist[v] + peso
+            if w not in visitados:
+                distancia[w] = distancia[v] + 1
                 padres[w] = v
-                cola.encolar((w, dist[w]))
+                visitados.add(w)
+                q.encolar(w)
     
-    if not destino: return padres, dist
+    if not destino: return padres, distancia
     return None, None
 
 
@@ -195,8 +199,7 @@ def calcular_page_rank(grafo, padres, dic_pr, q, grados, d, n, k):
             
             dic_pr[v][i] = ((1 - d) / n) + d * suma
             
-    for v in grafo:
-        heapq.heappush(q, (dic_pr[v][k - 1], v))
+    for v in grafo: heapq.heappush(q, (dic_pr[v][k - 1], v))
     
 def page_rank(grafo, k):
     """Calcula el page rank de cada vertice del grafo iterandolo _k_ veces y devuelve una
@@ -276,20 +279,24 @@ def rango_n(grafo, vertice, n):
     parámetro el grafo, un vértice y un número n.
     Pre: el grafo fue creado y el vértice se encuentra en él.
     """
-    padres, distancia = camino_minimo_bfs(grafo, vertice)
+    distancia = camino_minimo_bfs(grafo, vertice)[1]
     contador = 0
 
     for w in distancia:
-        if distancia[w] == n:
-            contador += 1
-
+        if distancia[w] == n: contador += 1
+    
     return contador
 
+
+
 def _camino_dfs(grafo, v, contador, camino):
-    if contador >= 20: return
+    if contador > 20: return
+    
     camino.append(v)
     adyacentes = grafo.obtener_adyacentes(v)
+    
     if len(adyacentes) == 0: return
+    
     _camino_dfs(grafo, adyacentes[0], contador + 1, camino)
 
 def camino_dfs(grafo, origen):
@@ -300,7 +307,9 @@ def camino_dfs(grafo, origen):
     """
     contador = 0
     camino = []
+    
     _camino_dfs(grafo, origen, contador, camino)
+    
     return camino
 
 def obtener_promedio_clustering(grafo):
@@ -327,10 +336,11 @@ def obtener_coef_clustering(grafo, vertice):
     if grado_salida < 2: return 0
     
     for v in adyacentes:
+        if v == vertice: continue
         for w in adyacentes:
-            if v == w: continue
-            if w in grafo.obtener_adyacentes(v): cant += 1
-    
+            if w == v: continue
+            if grafo.estan_conectados(v, w): cant += 1
+            
     return cant / (grado_salida * (grado_salida - 1))
 
 def obtener_arista_entrada_todos(grafo):
@@ -401,7 +411,7 @@ def label_propagation(grafo):
     for v in grafo:
         label[v] = v
 
-    for i in range(50):
+    for i in range(100):
         orden = orden_aleatorio(grafo)
         for v in orden: label[v] = max_frecuencia(label, v, entrada[v])
     

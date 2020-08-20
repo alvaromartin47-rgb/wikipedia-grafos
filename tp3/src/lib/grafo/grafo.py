@@ -132,7 +132,7 @@ class Grafo:
     def estan_conectados(self, vertice_A, vertice_B):
         """Devuelve un booleano dependiendo si el vértice A está conectado con el vértice B. (A -> B)."""
         
-        if not self.pertenecen(vertice_A, vertice_B): return False
+        if not self.pertenecen(vertice_A, vertice_B): raise IndexError(MENSAJE_INDEX_ERROR)
         return self.vertices[vertice_A].es_adyacente(vertice_B)
     
     def eliminar_vertice(self, clave_vertice):
