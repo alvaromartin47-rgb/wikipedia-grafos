@@ -74,6 +74,5 @@ def main():
     procesar_entrada(red_internet)
 
 
-
 if __name__ == "__main__":
     main()
