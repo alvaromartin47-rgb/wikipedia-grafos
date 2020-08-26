@@ -16,11 +16,14 @@ class Pila:
 	def __len__(self):
 		return self.cantidad
 
+	def __contains__(self, v):
+		return v in self.aux
+
 	def esta_vacia(self):
 		'''
-		Devuelve True si la lista esta vacia, de lo contrario False.
+		Devuelve True si la pila esta vacia, de lo contrario False.
 		'''
-		return len(self.items) == 0
+		return self.cantidad == 0
 
 	def apilar(self, x):
 		'''
@@ -35,8 +38,7 @@ class Pila:
 		Devuelve el elemento tope y lo elimina de la pila.
 		Si la pila está vacia, levanta una excepción.
 		'''
-		if self.esta_vacia():
-			raise IndexError('La pila está vacía.')
+		if self.esta_vacia(): raise IndexError('La pila está vacía.')
 
 		borrado = self.items.pop()
 		self.aux.remove(borrado)
@@ -44,14 +46,10 @@ class Pila:
 		
 		return borrado
 
-	def pertenece(self, elemento):
-		return elemento in self.aux
-
 	def ver_tope(self):
 		'''
 		Devuelve el ultimo elemento que se agrego a la pila.
 		'''
-		if len(self.items) == 0:
-			return None
-		return self.items[len(self.items)-1]
+		if self.esta_vacia(): return None
+		return self.items[-1]
 		
