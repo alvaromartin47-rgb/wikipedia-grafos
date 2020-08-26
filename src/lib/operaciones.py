@@ -21,38 +21,12 @@ INDEX = 0
                                                                                         #
 ######################################################################################### 
 
-def obtener_comandos(ruta_archivo):
-    """Lee el contenido de _ruta_archivo_ en formato .csv
-    y devuelve un diccionario con el contenido de las primeras
-    dos columnas del archivo. Como clave tendrá la primer columna de
-    cada linea y como valor la segunda.
-    Pre: el archivo tiene extensión .csv, existe y tiene al menos dos
-    columnas.
-    """
-    funcionalidades = dict()
-    
-    with open(ruta_archivo) as archivo:
-        for linea in archivo:
-            linea = linea.rstrip("\n").split(",")
-            
-            if len(linea[1]) == 3 and linea[1][1] == ":":
-                if linea[1][0].isdigit() and linea[1][2].isdigit():
-                    funcionalidades[linea[0]] = (int(linea[1][0]), int(linea[1][2]) + 1)
-            
-            elif linea[1].isdigit():
-                funcionalidades[linea[0]] = (int(linea[1][0]), int(linea[1][0]) + 1)
-            
-            else: funcionalidades[linea[0]] = linea[1]
-    
-    return funcionalidades
-
-
 def cargar_contenido(ruta_archivo):
     """Lee el contenido de _ruta_archivo_ y devuelve un grafo
     dirigido donde cada vertice es una página y cada arista es
     el enlace de una v a otra.
     """
-    red_internet = Grafo()
+    red_internet = Grafo(True)
     with open(ruta_archivo) as archivo:
         for linea in archivo:
             linea = linea.rstrip("\n").split(SEPARADOR)
@@ -132,7 +106,7 @@ def _cfc(grafo, v, visitados, mb, orden, pila, componentes):
             INDEX += 1
             _cfc(grafo, w, visitados, mb, orden, pila, componentes)
         
-        if pila.pertenece(w): mb[v] = min(mb[v], mb[w])
+        if w in pila: mb[v] = min(mb[v], mb[w])
 
     if mb[v] == orden[v] and not pila.esta_vacia(): agregar_componente(componentes, v, pila)
 
@@ -206,7 +180,7 @@ def calcular_page_rank(grafo, padres, dic_pr, q, grados, d, n, k):
             
     for v in grafo: heapq.heappush(q, (dic_pr[v][k - 1], v))
     
-def page_rank(grafo, k):
+def page_rank(grafo, k=15):
     """Calcula el page rank de cada vertice del grafo iterandolo _k_ veces y devuelve una
     lista ordenada de mayor a menor valor de page rank.
     Pre: el grafo fue creado.
@@ -223,7 +197,7 @@ def page_rank(grafo, k):
     return heap_a_lista(q)
     
 
-def backtracking(grafo, origen, n, v_act, n_act, padres, visitados):
+def buscar_ciclos(grafo, origen, n, v_act, n_act, padres, visitados):
     """Algoritmo basado en backtraking que busca un ciclo de largo _n_ dentro de _grafo_.
     Devuelve True si lo encuentra, de lo contrario False. La solucion se encuentra en _padres_.
     """
@@ -236,7 +210,7 @@ def backtracking(grafo, origen, n, v_act, n_act, padres, visitados):
         padres[w] = v_act
         visitados.add(w)
 
-        hay_solucion = backtracking(grafo, origen, n, w, n_act + 1, padres, visitados)
+        hay_solucion = buscar_ciclos(grafo, origen, n, w, n_act + 1, padres, visitados)
         
         ultimo = visitados.remove(w)
 
@@ -257,7 +231,7 @@ def obtener_ciclo_n(grafo, origen, n):
     padres[origen] = None
     visitados.add(origen)
 
-    return backtracking(grafo, origen, n, origen, n_act, padres, visitados), padres
+    return buscar_ciclos(grafo, origen, n, origen, n_act, padres, visitados), padres
 
 
 def obtener_diametro(grafo):
@@ -348,6 +322,10 @@ def obtener_coef_clustering(grafo, vertice):
             
     return cant / (grado_salida * (grado_salida - 1))
 
+def calcular_clustering(grafo, origen):
+    if not origen: return obtener_promedio_clustering(grafo)
+    else: return obtener_coef_clustering(grafo, origen)
+
 def obtener_arista_entrada_todos(grafo):
     """Devuelve un diccionario con la lista de vértices de entrada de cada vértice del grafo.
     Recibe como parametro un grafo ya creado.
@@ -403,7 +381,7 @@ def max_frecuencia(comunidades, v, aristas_entrada):
     
     return label
 
-def label_propagation(grafo):
+def label_propagation(grafo, iteraciones=100):
     """Algoritmo para calcular las comunidades que existen en un grafo. Recibe como parametro 
     el grafo.
     """
@@ -412,7 +390,7 @@ def label_propagation(grafo):
 
     for v in grafo: label[v] = v
 
-    for i in range(100):
+    for i in range(iteraciones):
         orden = orden_aleatorio(grafo)
         for v in orden: label[v] = max_frecuencia(label, v, entrada[v])
     

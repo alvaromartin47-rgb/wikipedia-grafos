@@ -17,6 +17,11 @@ def imprimir_form_coma(solucion, n):
     for i in range(1, n): print(f", {solucion[i]}", end="")
     print()
 
+def imprimir_listado(funcionalidades):
+    for comando in funcionalidades:
+        if comando == "listar_operaciones": continue
+        print(comando)
+
 def imprimir_componente(componente, n):
     imprimir_form_coma(componente, n)
 

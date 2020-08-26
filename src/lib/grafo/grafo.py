@@ -1,4 +1,4 @@
-MENSAJE_INDEX_ERROR = "El vértice no pertenece al grafo."
+from mod.mensajes import MENSAJE_INDEX_ERROR
 
 class Vertice:
     """Representación de la estructura de datos vértice."""
@@ -46,18 +46,15 @@ class Vertice:
         
         return list(self.vecinos.keys())
 
-    def obtener_relaciones(self):
-        """Devuelve todas las relaciones que tiene el vertice."""
-        
-        return self.vecinos
-
 
 class Grafo:
     """Representación del TDA Grafo."""
     
-    def __init__(self):
-        """Constructor de un grafo vacío."""
+    def __init__(self, es_dirigido):
+        """Constructor de un grafo vacío. Recibe un boleano indicado si es dirigido
+        o no."""
 
+        self.es_dirigido = es_dirigido
         self.vertices = {}
         self.cantidad = 0
 
@@ -89,7 +86,6 @@ class Grafo:
         de lo contrario False.
         """
         for vertice in args:
-            if not vertice: return False
             if not vertice in self.vertices: return False
         
         return True
@@ -99,6 +95,7 @@ class Grafo:
         de que exista un vértice con el mismo nombre, no se agrega y devuelve False.
         Post: se agregó un vértice al grafo.
         """
+        
         if self.pertenecen(clave_vertice): return False
         
         vertice = Vertice(clave_vertice)
@@ -115,19 +112,14 @@ class Grafo:
         Post: se agregó una arista al grafo.
         """
         if not self.pertenecen(vertice_A, vertice_B): return False
-        
+
+        if not self.es_dirigido:
+            vertice2 = self.vertices[vertice_B]
+            vertice2.agregar_adyacente(vertice_A, peso)
+
         vertice1 = self.vertices[vertice_A]
         vertice1.agregar_adyacente(vertice_B, peso)
         return True
-
-    def agregar_arista_no_dirigido(self, vertice_A, vertice_B, peso = 1):
-        """Agrega una arista entre vertice_A y vertice_B. Recibe por parametro los vértices a unir.
-        Devuelve True si se logró agregar la arista o False, en caso contrario (si los vértices
-        ya estaban conectados). En caso de que se quiere agregarle peso a la arista, se le pasa como tercer
-        parámetro el peso.
-        Post: se agregó una arista al grafo.
-        """
-        return agregar_arista_dirigido(vertice_A, vertice_B) and agregar_arista_dirigido(vertice_B, vertice_A)
 
     def estan_conectados(self, vertice_A, vertice_B):
         """Devuelve un booleano dependiendo si el vértice A está conectado con el vértice B. (A -> B)."""
@@ -142,11 +134,10 @@ class Grafo:
         """
         if not self.pertenecen(clave_vertice): raise IndexError(MENSAJE_INDEX_ERROR)
 
-        relaciones = self.obtener_aristas(clave_vertice)
         vertice = self.vertices.pop(clave_vertice)
         
         self.cantidad -= 1
-        return relaciones
+        return clave_vertice
 
     def eliminar_arista(self, vertice_A, vertice_B):
         """Elimina la arista que une el vértice A del vértice B (A -> B). Devuelve True si se logró
@@ -154,8 +145,15 @@ class Grafo:
         Post: se eliminó la arista que une A con B.
         """
         if not self.pertenecen(vertice_A, vertice_B): raise IndexError(MENSAJE_INDEX_ERROR)
-        if not self.vertices[vertice_A].es_adyacente(): return False
         
+        ok = True
+
+        if not self.es_dirigido: ok = self.vertices[vertice_B].es_adyacente(vertice_A)
+        ok = self.vertices[vertice_A].es_adyacente(vertice_B)
+
+        if not ok: return False
+        
+        if not self.es_dirigido: self.vertices[vertice_B].eliminar_adyacente(vertice_A)
         self.vertices[vertice_A].eliminar_adyacente(vertice_B)
         
         return True
@@ -167,30 +165,12 @@ class Grafo:
         
         return self.vertices[vertice].adyacentes()
 
-    def obtener_aristas(self, *args):
-        """Recibe una cantidad n de vertices y devuelve un diccionario de relaciones
-        donde cada clave será el vertice y cada valor un diccionario con todos sus adyacentes
-        y respectivos pesos.
-        """
-        relaciones = dict()
-        
-        for v in args:
-            if not self.pertenecen(v): continue
-            aristas = self.vertices[v].obtener_relaciones()
-            relaciones[v] = aristas
-        
-        return relaciones
-
     def obtener_arista(self, v, w):
         """Devuelve la arista entre _v_ y _w_ en forma de tupla ((v, w), peso). En caso de
         que los vertices no existan lanza excepcion, y, si los vertices existen pero no estan
         conectados devuelve una tupla con None.
         """
         if not self.pertenecen(v, w): raise IndexError(MENSAJE_INDEX_ERROR)
-
-        aristas = self.obtener_aristas(v)
         
         if not self.estan_conectados(v, w): return None, None
         return (v, w), aristas[v][w]
-
-    

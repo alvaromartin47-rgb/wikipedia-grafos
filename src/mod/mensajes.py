@@ -6,3 +6,5 @@ ERR_CAMINO = "No se encontro recorrido"
 ERR_CICLO = "No se encontro ciclo para esta página"
 ERR_CONEC = "No se encontro conectividad para esta página"
 ERR_LECTURA = "No existe forma de leer las paginas en orden"
+
+MENSAJE_INDEX_ERROR = "El vértice no pertenece al grafo."
